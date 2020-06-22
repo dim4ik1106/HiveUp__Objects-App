@@ -1,0 +1,240 @@
+.objects {
+    width: 600px;
+    display: flex;
+    flex-direction: column;
+
+}
+
+body.popup-body {
+    background-color: transparent;
+    margin: 0;
+    padding: 10px 10px 0;
+    background: transparent;
+    min-width: 400px;
+    /* min-height: 400px; */
+}
+
+
+.object {
+    width: 100%;
+    padding: 20px;
+    background-color: #c6c6c6;
+}
+
+.objects-context-menu-container {
+    position: absolute;
+    z-index: 9999999999;
+    min-width: 90px;
+    display: none;
+}
+
+.objects-context-menu {
+    width: 100%;
+    /* height: 100%; */
+    display: flex;
+    flex-direction: column;
+}
+
+.objects-context-menu .item,
+.popup-button {
+    background: #2d2d2d;
+    color: #fff;
+    cursor: pointer;
+    padding: 0 10px 3px;
+    margin-top: 1px;
+    border-radius: 30px;
+    text-align: center;
+}
+
+.objects-context-menu .item {
+    padding: 3px 10px 2px;
+}
+
+.objects-context-menu .item:hover,
+.popup-button:hover {
+    background: #101010;
+}
+
+.selected-content {
+    background-color: rgba(255, 255, 8, 0.52) !important;
+    z-index: 9999999998;
+}
+
+.popup-button {
+    min-width: 250px;
+    padding: 10px;
+    cursor: pointer;
+    border: none;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.popup-button:focus,
+.object-name input {
+    outline: none;
+}
+
+.object-name {
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+}
+
+.object-name input {
+    height: 35px;
+    border-radius: 30px;
+    margin-bottom: 5px;
+    text-align: center;
+    color: black;
+    width: 100%;
+    font-size: 14px;
+    box-sizing: border-box;
+    border: 1px solid #c6c6c6;
+    background-color: #fff !important;
+}
+
+.object-name button {
+    margin-bottom: 0;
+    min-width: 20px;
+    width: 100%;
+}
+
+.option__container {
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+.option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.form_toggle {
+    display: inline-block;
+    overflow: hidden;
+    /* display: none; */
+}
+
+.form_toggle-item {
+    float: left;
+    display: inline-block;
+}
+
+.form_toggle-item input[type=radio] {
+    display: none;
+}
+
+.form_toggle-item label {
+    display: inline-block;
+    padding: 0px 15px;
+    line-height: 34px;
+    border: 1px solid #999;
+    border-right: none;
+    cursor: pointer;
+    user-select: none;
+}
+
+.form_toggle .item-1 label {
+    border-radius: 6px 0 0 6px;
+}
+
+.form_toggle .item-2 label {
+    border-radius: 0 6px 6px 0;
+    border-right: 1px solid #999;
+}
+
+/* Checked */
+.enable-extansion .form_toggle .item-1 input[type=radio]:checked+label {
+    background: #ffc5c5;
+}
+
+.enable-extansion .form_toggle .item-2 input[type=radio]:checked+label {
+    background: #bbffbb;
+}
+
+.enable-blocking .form_toggle .item-1 input[type=radio]:checked+label {
+    background: #ffc5c5;
+}
+
+.enable-blocking .form_toggle .item-2 input[type=radio]:checked+label {
+    background: #bbffbb;
+}
+
+.message {
+    font-size: 14px;
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.accept {
+    color: green;
+}
+
+.error {
+    color: red;
+}
+
+.radio-cont {
+    width: 34px;
+    height: 16px;
+}
+
+.hidden-checkbox {
+    display: none;
+}
+
+.checkbox-bar {
+    background-color: rgb(154, 160, 166);
+    border-radius: 8px;
+    height: 12px;
+    left: 3px;
+    position: absolute;
+    top: 2px;
+    transition: background-color linear 80ms;
+    width: 28px;
+    z-index: 0;
+}
+
+.checkbox-dot {
+    background-color: rgb(218, 220, 224);
+    border-radius: 50%;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .4);
+    display: block;
+    height: 16px;
+    position: relative;
+    transition: transform linear 80ms, background-color linear 80ms;
+    width: 16px;
+    top: -2px;
+    left: -3px;
+    z-index: 1;
+}
+
+#ext-status+label {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+#blocking-status+label {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+#ext-status:checked+label .checkbox-bar {
+    background-color: rgba(138, 180, 248, .5);
+}
+#ext-status:checked+label .checkbox-dot {
+    background-color: rgba(138, 180, 248, 1);
+    transform: translate3d(18px, 0, 0);
+}
+
+#blocking-status:checked+label .checkbox-bar {
+    background-color: rgba(138, 180, 248, .5);
+}
+#blocking-status:checked+label .checkbox-dot {
+    background-color: rgba(138, 180, 248, 1);
+    transform: translate3d(18px, 0, 0);
+}

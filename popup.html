@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="content-type" charset="utf-8">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'" />
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="popup-body">
+
+    <div class="option__container">
+
+        <div class="option enable-extansion">
+            <p class="message">
+                Enable selection for adding objects
+            </p>
+            <div class="radio-cont">
+                <input type="checkbox" class="hidden-checkbox" name="ext-status" id="ext-status">
+                <label for="ext-status">
+                    <div class="checkbox-bar">
+                        <div class="checkbox-dot"></div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div class="option enable-blocking">
+            <p class="message">
+                Enable text block selection
+            </p>
+            <div class="radio-cont">
+                <input type="checkbox" checked='true' class="hidden-checkbox" name="blocking-status" id="blocking-status">
+                <label for="blocking-status">
+                    <div class="checkbox-bar">
+                        <div class="checkbox-dot"></div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+    <script src="jquery-3.5.1.min.js"></script>
+    <script src="popup.js"></script>
+</body>
+
+</html>

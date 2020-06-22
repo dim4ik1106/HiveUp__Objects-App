@@ -1,0 +1,28 @@
+{
+    "manifest_version": 2,
+    "name": "Object adder extension",
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwhGP+evU7fXBRu31W9z9AgopK7EJKD/STg3m73tbGZ1RRVFEsq+mQ8Ou5t7dYBXMk7xplyLisVMrECK6ZPVu0ptzWF80A0QntKHjEqkX1MB8Fwno5RNlvWVaaMNGRwuoUvQOOJN9nOg/Opow6hDHyl7Pzb/Rwsb/a8P6dhwzo4/STN5NxU57LZypIBvWG86KnvGrSWrYCaNfegM44hda4zrjV8VZiQSbIRgwHIqnqzM86CVcF+/JFsX8vui0LNnWfIvSIwVj+VPl9/Ek1O+hMI5Y2GLHOA0jESbU0cudw1RTbTtC5FfA4TsPOjikNIjNqOLlwmakZiIchTvmEoLE7wIDAQAB",
+    "version": "2.0",
+    "description": "Object app description",
+    "background": {
+        "scripts": ["jquery-3.5.1.min.js", "background.js"]
+    },
+    "content_scripts": [{
+        "matches": [
+            "<all_urls>"
+        ],
+        "js": ["jquery-3.5.1.min.js", "jquery.behavior.js", "content.js"],
+        "css": ["style.css"]
+    }],
+    "browser_action": {
+        "default_icon": "icon.png",
+        "default_popup": "popup.html"
+    },
+    "options_page": "options.html",
+    "permissions": [
+        "activeTab",
+        "declarativeContent",
+        "storage",
+        "tabs"
+    ]
+}
