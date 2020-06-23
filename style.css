@@ -197,13 +197,6 @@ select:focus {
     margin-bottom: 10px;
 }
 
-.accept {
-    color: green;
-}
-
-.error {
-    color: red;
-}
 
 .radio-cont {
     width: 34px;
