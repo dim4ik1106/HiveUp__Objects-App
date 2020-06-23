@@ -1,7 +1,7 @@
 // content.js
 
-var addObject = $('<div class="item" id="add-object">Add object</div>'),
-    cancel = $('<div class="item" id="cancel-selection">Cancel selection</div>'),
+var addObject = $('<button class="item" id="add-object">Add object</button>'),
+    cancel = $('<button class="item" id="cancel-selection">Cancel selection</button>'),
     contextMenu = $('<div class="objects-context-menu-container" id="add-menu"></div>'),
     selectedContent = $('.selected-content'),
     contMenuContainer = $('<div class="objects-context-menu"></div>'),
@@ -20,7 +20,7 @@ $(contextMenu).append(contMenuContainer);
 
 var deleteMenu = $('<div class="objects-context-menu-container"></div>'),
     deleteMenuContainer = $('<div class="objects-context-menu"></div>'),
-    deleteObject = $('<div class="item" id="add-object">Remove object</div>');
+    deleteObject = $('<button class="item" id="add-object">Remove object</button>');
 
 $(deleteMenuContainer).append(deleteObject);
 $(deleteMenu).append(deleteMenuContainer);
@@ -207,19 +207,24 @@ chrome.runtime.onMessage.addListener(
 
         } else if (request.message === "model-not-opened") {
             alert('No one project is opened. Open your project in another tab and repeat the procedure of selecting an object.');
-            // listenerState = false;
-            // chrome.runtime.sendMessage({
-            //     "message": "extansion-state-answer",
-            //     state: listenerState
-            // });
+            listenerState = false;
+            chrome.runtime.sendMessage({
+                "message": "extansion-state-answer",
+                state: listenerState
+            });
 
         } else if (request.message === "two-or-more-opened") {
             alert('Two or more projects opened. Close unnecessary projects and repeat the procedure of selecting an object.');
-            // listenerState = false;
-            // chrome.runtime.sendMessage({
-            //     "message": "extansion-state-answer",
-            //     state: listenerState
-            // });
+            listenerState = false;
+            chrome.runtime.sendMessage({
+                "message": "extansion-state-answer",
+                state: listenerState
+            });
+
+        } else if (request.message === "get_model_name_and_tags") {
+            window.postMessage({
+                "message": "get_model_name_and_tags"
+            });
 
         } else if (request.message === "add_object") {
             window.postMessage({
@@ -375,6 +380,14 @@ window.addEventListener("message", function (request) {
             "object": request.data.object
         });
         console.log("highlight_command_from_hiveup to BG was sended");
+    }
+
+    if (request.data.message && (request.data.message == "get_model_name_and_tags-answer")) {
+        chrome.runtime.sendMessage({
+            "message": "get_model_name_and_tags-answer",
+            "modelName": request.data.modelName,
+            "tags": request.data.tags
+        });
     }
 });
 

@@ -12,6 +12,8 @@
 // });
 
 var extStatus = false;
+var regexp = /\/\bmodel\/\b\w*\//gi;
+var modelId;
 
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
@@ -47,8 +49,6 @@ chrome.runtime.onMessage.addListener(
                 }
             });
 
-
-            
         }
         if (request.message === "send_object_to_hiveup") {
             chrome.tabs.query({
@@ -101,17 +101,17 @@ chrome.runtime.onMessage.addListener(
                         tabsCount: tabs.length
                     });
                 } else if (tabs.length == 1) {
-                    let regexp = /\/\bmodel\/\b\w*\//gi;
-                    let model = tabs[0].url;
-                    model = model.match(regexp).toString();
-                    model = model.replace('model', '');
-                    model = model.replace('/', '');
-                    console.log(model);
-                    chrome.runtime.sendMessage({
-                        message: 'check_is_here_opened_models-answer',
-                        accept: true,
-                        model: model
+                    modelId = tabs[0].url.match(regexp).toString().replace('/model', '');
+
+                    chrome.tabs.sendMessage(tabs[0].id, {
+                        "message": "get_model_name_and_tags"
                     });
+
+                    // chrome.runtime.sendMessage({
+                    //     message: 'check_is_here_opened_models-answer',
+                    //     accept: true,
+                    //     modelId: modelId
+                    // });
                 }
                 console.log(tabs);
             });

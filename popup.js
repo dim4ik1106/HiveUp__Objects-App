@@ -1,10 +1,7 @@
 jQuery(document).ready(function ($) {
-    let statusOff = $('#select-object-off'),
-        statusOn = $('#select-object-on'),
+    let tagSelector = $('#tags-for-objects'),
         statusOnCheckbox = $('#ext-status'),
-        statusOnBlocking = $('#blocking-status'),
-        blockingOff = $('#select-blocking-off'),
-        blockingOn = $('#select-blocking-on');
+        statusOnBlocking = $('#blocking-status');
 
     checkCurrentModels();
     checkStateOnCurPage();
@@ -72,54 +69,6 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    $(statusOn).change(function (e) {
-        chrome.tabs.query({
-            active: true,
-            currentWindow: true
-        }, function (tabs) {
-            var activeTab = tabs[0];
-            chrome.tabs.sendMessage(activeTab.id, {
-                "message": "start-extansion",
-            });
-        });
-    });
-
-    $(statusOff).change(function (e) {
-        chrome.tabs.query({
-            active: true,
-            currentWindow: true
-        }, function (tabs) {
-            var activeTab = tabs[0];
-            chrome.tabs.sendMessage(activeTab.id, {
-                "message": "stop-extansion",
-            });
-        });
-    });
-
-    $(blockingOn).change(function (e) {
-        chrome.tabs.query({
-            active: true,
-            currentWindow: true
-        }, function (tabs) {
-            var activeTab = tabs[0];
-            chrome.tabs.sendMessage(activeTab.id, {
-                "message": "start-block-selection",
-            });
-        });
-    });
-
-    $(blockingOff).change(function (e) {
-        chrome.tabs.query({
-            active: true,
-            currentWindow: true
-        }, function (tabs) {
-            var activeTab = tabs[0];
-            chrome.tabs.sendMessage(activeTab.id, {
-                "message": "stop-block-selection",
-            });
-        });
-    });
-
     chrome.runtime.onMessage.addListener(
         function (request, sender, sendResponse) {
             if (request.message === "extansion-state-answer") {
@@ -137,36 +86,18 @@ jQuery(document).ready(function ($) {
                     $(statusOnBlocking).attr('checked', false);
                 }
             }
-            // if (request.message === "extansion-state-answer") {
-            //     if (request.state) {
-            //         $(statusOn).attr('checked', true);
-            //         $(statusOff).attr('checked', false);
-            //     } else {
-            //         $(statusOn).attr('checked', false);
-            //         $(statusOff).attr('checked', true);
-            //     }
-            // }
-
-            // if (request.message === "block-selection-state-answer") {
-            //     if (request.state) {
-            //         $(blockingOn).attr('checked', true);
-            //         $(blockingOff).attr('checked', false);
-            //     } else {
-            //         $(blockingOn).attr('checked', false);
-            //         $(blockingOff).attr('checked', true);
-            //     }
-            // }
 
             if (request.message === "check_is_here_opened_models-answer") {
                 if (request.accept) {
-                    $('.popup-body').prepend('<p class="message accept">You can enable extension. <br>Objects will be sent to the model: ' +
-                        request.model + '.</p>');
+                    $('.popup-body').prepend('<p class="message">Objects will be sent to the model: ' + request.modelId + '.</p>');
                     $('.option__container').show();
                 } else {
                     if (request.tabsCount == 0) {
-                        $('.popup-body').prepend('<p class="message error">Please open your model on HiveUp to use extension.</p>');
+                        $('.popup-body').prepend('<a href="http://do.hiveup.org/done/" target="_blank" rel="HiveUp" class="popup-button">Open HiveUp</a>');
+                        // $('.popup-body').prepend('<a href="http://do.hiveup.org/done/" target="_blank" rel="HiveUp"><button class="popup-button">Open HiveUp</button></a>');
+                        $('.popup-body').prepend('<p class="message">Please open your model on HiveUp to use extension.</p>');
                     } else if (request.tabsCount > 1) {
-                        $('.popup-body').prepend('<p class="message error">Please open only one model on HiveUp to use extension.</p>');
+                        $('.popup-body').prepend('<p class="message">Please open only one model on HiveUp to use extension.</p>');
                     }
                 }
                 console.log(request);
@@ -211,57 +142,3 @@ function checkCurrentModels() {
     console.log('Check opened models message was sended');
 }
 
-
-jQuery(document).ready(function ($) {
-    var range;
-    let selectObject = $('#select-object'),
-        deleteObjects = $('#remove-all-objects'),
-        startScript = $('#start-script'),
-        startScriptFromBg = $('#start-script-from-bg');
-
-    $(selectObject).click(function (e) {
-        chrome.tabs.query({
-            active: true,
-            currentWindow: true
-        }, function (tabs) {
-            var activeTab = tabs[0];
-            chrome.tabs.sendMessage(activeTab.id, {
-                "message": "clicked_browser_action"
-            });
-        });
-    });
-
-    $(deleteObjects).click(function (e) {
-        chrome.tabs.query({
-            active: true,
-            currentWindow: true
-        }, function (tabs) {
-            var activeTab = tabs[0];
-            chrome.tabs.sendMessage(activeTab.id, {
-                "message": "remove_objects_clicked"
-            });
-        });
-    });
-
-    $(startScript).click(function (e) {
-        chrome.tabs.query({
-            active: true,
-            currentWindow: true
-        }, function (tabs) {
-            var activeTab = tabs[0];
-            chrome.tabs.sendMessage(activeTab.id, {
-                "message": "start_script"
-            }, function (response) {
-                range = response.object;
-            });
-        });
-    });
-
-    $(startScriptFromBg).click(function (e) {
-        chrome.runtime.sendMessage({
-            "message": "start_script_from_bg",
-            "range": range
-        });
-    });
-
-});

@@ -24,5 +24,8 @@
         "declarativeContent",
         "storage",
         "tabs"
+    ],
+    "web_accessible_resources": [
+        "arrow.svg"
     ]
 }
