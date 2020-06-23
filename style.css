@@ -89,7 +89,7 @@ select:focus {
 .object-name {
     display: flex;
     flex-direction: row;
-    width: 350px;
+    width: 300px;
 }
 
 .object-name input {
@@ -105,6 +105,10 @@ select:focus {
     font-size: 14px;
     font-family: "Arial", sans-serif;
     background-color: #fff !important;
+}
+
+.object-name input.invalid-value{
+    border-color: rgba(234, 23, 23, 1) !important;
 }
 
 .object-name button {
@@ -290,3 +294,4 @@ select:focus {
     background-size: 0.65em auto, 100%;
     cursor: pointer;
 }
+

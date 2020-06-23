@@ -1,10 +1,12 @@
 jQuery(document).ready(function ($) {
     let tagSelector = $('#tags-for-objects'),
+        tagsArr,
         statusOnCheckbox = $('#ext-status'),
         statusOnBlocking = $('#blocking-status');
 
     checkCurrentModels();
     checkStateOnCurPage();
+    checkTagOnCurPage();
     checkBlockingStateOnCurPage();
 
     $(statusOnCheckbox).change(function (e) {
@@ -69,6 +71,21 @@ jQuery(document).ready(function ($) {
         }
     });
 
+    $(tagSelector).change(function(e) {
+        if ($(this).val() != 'null' && $(this).val() != 'none') {
+            chrome.tabs.query({
+                active: true,
+                currentWindow: true
+            }, function (tabs) {
+                var activeTab = tabs[0];
+                chrome.tabs.sendMessage(activeTab.id, {
+                    "message": "cur-selected-tag",
+                    tag: $(tagSelector).val()
+                });
+            });
+        }
+    });
+
     chrome.runtime.onMessage.addListener(
         function (request, sender, sendResponse) {
             if (request.message === "extansion-state-answer") {
@@ -87,14 +104,35 @@ jQuery(document).ready(function ($) {
                 }
             }
 
-            if (request.message === "check_is_here_opened_models-answer") {
+            if (request.message === "get-cur-selected-tag-answer") {
+                console.log(request);
+                if (request.curTag) {
+                    $(tagSelector).append('<option value="' + request.curTag + '">' + request.curTag + '</option>');
+                    $(tagSelector).val(request.curTag);
+                    console.log('all right');
+                } else {
+                    console.log('Not right');
+                    $(tagSelector).val('null');
+                }
+            }
+
+            if (request.message === "get_model_name_and_tags-answer") {
                 if (request.accept) {
-                    $('.popup-body').prepend('<p class="message">Objects will be sent to the model: ' + request.modelId + '.</p>');
+                    $('.popup-body').prepend('<p class="message">Objects will be sent to the model: "' + request.modelName + '".</p>');
+                    tagsArr = request.tags;
+                    for (let i = 0; i < tagsArr.length; i++) {
+                        console.log('option');
+                        console.log(tagsArr[i]);
+                        console.log($('option').is('[value="' + tagsArr[i] + '"]'));
+                        if (!$('option').is('[value="' + tagsArr[i] + '"]')) {
+                            $(tagSelector).append('<option value="' + tagsArr[i] + '">' + tagsArr[i] + '</option>');
+                        }
+                    }
                     $('.option__container').show();
+
                 } else {
                     if (request.tabsCount == 0) {
                         $('.popup-body').prepend('<a href="http://do.hiveup.org/done/" target="_blank" rel="HiveUp" class="popup-button">Open HiveUp</a>');
-                        // $('.popup-body').prepend('<a href="http://do.hiveup.org/done/" target="_blank" rel="HiveUp"><button class="popup-button">Open HiveUp</button></a>');
                         $('.popup-body').prepend('<p class="message">Please open your model on HiveUp to use extension.</p>');
                     } else if (request.tabsCount > 1) {
                         $('.popup-body').prepend('<p class="message">Please open only one model on HiveUp to use extension.</p>');
@@ -119,6 +157,18 @@ function checkStateOnCurPage() {
         var activeTab = tabs[0];
         chrome.tabs.sendMessage(activeTab.id, {
             "message": "extansion-state"
+        });
+    });
+}
+
+function checkTagOnCurPage() {
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, function (tabs) {
+        var activeTab = tabs[0];
+        chrome.tabs.sendMessage(activeTab.id, {
+            "message": "get-cur-selected-tag"
         });
     });
 }

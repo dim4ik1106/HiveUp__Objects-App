@@ -128,6 +128,17 @@ $('body').append(deleteMenu);
 
 var listenerState = false;
 var blockSelectionState = true;
+var curSelctedTag;
+
+document.onkeyup = function (e) {
+    e = e || window.event;
+    if (e.keyCode === 13) {
+        $(objNameOk).mouseup();
+    }
+    // Отменяем действие браузера
+    return false;
+};
+
 
 
 $(document).mouseup(function (e) {
@@ -172,11 +183,11 @@ chrome.runtime.onMessage.addListener(
         if (request.message === "start-extansion") {
             console.log('started');
             listenerState = true;
-            
+
         } else if (request.message === "stop-extansion") {
             console.log('stopped');
             listenerState = false;
-            
+
         } else if (request.message === "extansion-state") {
             chrome.runtime.sendMessage({
                 "message": "extansion-state-answer",
@@ -187,18 +198,29 @@ chrome.runtime.onMessage.addListener(
         } else if (request.message === "start-block-selection") {
             console.log('block started');
             blockSelectionState = true;
-            
+
         } else if (request.message === "stop-block-selection") {
             console.log('block stopped');
             blockSelectionState = false;
-            
+
+        } else if (request.message === "cur-selected-tag") {
+            curSelctedTag = request.tag;
+            console.log('Now CURRENT TAG IS ' + curSelctedTag);
+
+        } else if (request.message === "get-cur-selected-tag") {
+            chrome.runtime.sendMessage({
+                "message": "get-cur-selected-tag-answer",
+                curTag: curSelctedTag
+            });
+            console.log('answered TAGGGGGGG ' + curSelctedTag);
+
         } else if (request.message === "block-selection-state") {
             chrome.runtime.sendMessage({
                 "message": "block-selection-state-answer",
                 state: blockSelectionState
             });
             console.log('answered blocking ' + blockSelectionState);
-            
+
 
         } else if (request.message === "remove_objects_clicked") {
             $('.selected-content').each(function () {
@@ -225,6 +247,8 @@ chrome.runtime.onMessage.addListener(
             window.postMessage({
                 "message": "get_model_name_and_tags"
             });
+            console.log("Запрос на модель отправлен на страницу");
+            console.log(request.message);
 
         } else if (request.message === "add_object") {
             window.postMessage({
@@ -251,7 +275,7 @@ chrome.runtime.onMessage.addListener(
                 newEndCont = newEndCont[newEndCont.length - 1];
                 console.log(newStartCont);
                 console.log(newEndCont);
-            
+
                 if (typeof newStartCont != 'undefined') {
                     console.log(newStartCont);
                     console.log('all right!');
@@ -259,7 +283,7 @@ chrome.runtime.onMessage.addListener(
                         finEndCont,
                         startNodesList = newStartCont.childNodes,
                         endNodesList = newEndCont.childNodes;
-            
+
                     for (let index = 0; index < startNodesList.length; index++) {
                         let curNode = startNodesList.item(index);
                         if (curNode.textContent.indexOf(a.startCont) > -1) {
@@ -276,8 +300,8 @@ chrome.runtime.onMessage.addListener(
                             break;
                         }
                     }
-            
-            
+
+
                     rng.setStart(finStartCont, a.startOffset);
                     rng.setEnd(finEndCont, a.endOffset);
                     window.getSelection().addRange(rng);
@@ -288,7 +312,7 @@ chrome.runtime.onMessage.addListener(
                         reverseAddedSelection = wrapSelection(false);
                     }
                     $(reverseAddedSelection.span).addClass('full-added-object');
-            
+
                     $(reverseAddedSelection.span).click(function (e) {
                         e.preventDefault();
                         window.tagString = $(this);
@@ -298,14 +322,14 @@ chrome.runtime.onMessage.addListener(
                             display: "block"
                         });
                     });
-            
+
                     $('html, body').animate({
                         scrollTop: $(reverseAddedSelection.span).offset().top
                         // scrollTop: $(".full-added-object").offset().top
                     }, 1000);
-            
+
                     window.getSelection().removeAllRanges();
-            
+
                     count = 0;
                 } else if (count <= 10) {
                     count++;
@@ -329,6 +353,13 @@ var selectedObject = {};
 $(objNameOk).mouseup(function (e) {
     e.preventDefault();
     e.stopPropagation();
+    if ($(objNameInput).val().length < 1) {
+        $(objNameInput).addClass("invalid-value");
+        setTimeout(function () {
+            $(objNameInput).removeClass("invalid-value");
+        }, 600);
+        return false;
+    }
     $(objectNameContainer).hide();
     $(curWrappedContent.span).addClass('full-added-object');
 
@@ -345,7 +376,9 @@ $(objNameOk).mouseup(function (e) {
     let name = $(objNameInput).val();
     selectedObject.name = name;
     selectedObject.text = $(curWrappedContent.span).text().replace(/\s+/g, " ");
-
+    if (curSelctedTag) {
+        selectedObject.tag = curSelctedTag;
+    }
     selectedObject.range = curWrappedContent.newRange;
     selectedObject.location = objLocation;
     $(objNameInput).val('');
@@ -354,6 +387,8 @@ $(objNameOk).mouseup(function (e) {
         "message": "send_object_to_hiveup",
         "object": selectedObject
     });
+
+    console.log(selectedObject);
 
 
 });
@@ -385,9 +420,13 @@ window.addEventListener("message", function (request) {
     if (request.data.message && (request.data.message == "get_model_name_and_tags-answer")) {
         chrome.runtime.sendMessage({
             "message": "get_model_name_and_tags-answer",
+            "accept": true,
             "modelName": request.data.modelName,
             "tags": request.data.tags
         });
+        console.log(request.data.message);
+        console.log(request.data.modelName);
+        console.log(request.data.tags);
     }
 });
 

@@ -89,14 +89,14 @@ chrome.runtime.onMessage.addListener(
             }, function (tabs) {
                 if (tabs.length == 0) {
                     chrome.runtime.sendMessage({
-                        message: 'check_is_here_opened_models-answer',
+                        message: 'get_model_name_and_tags-answer',
                         accept: false,
                         tabsCount: 0
                     });
 
                 } else if (tabs.length > 1) {
                     chrome.runtime.sendMessage({
-                        message: 'check_is_here_opened_models-answer',
+                        message: 'get_model_name_and_tags-answer',
                         accept: false,
                         tabsCount: tabs.length
                     });
