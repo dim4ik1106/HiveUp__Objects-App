@@ -335,9 +335,10 @@ chrome.runtime.onMessage.addListener(
                     count++;
                     console.log(count + ' try');
                     setTimeout(addSelectionFromApp, 500);
-                } else if (count >= 10) {
-                    alert('Скорее всего нужного объекта на странице больше не существует. Или произошла какая-то ошибка');
                 }
+                // else if (count >= 10) {
+                //     alert('Скорее всего нужного объекта на странице больше не существует. Или произошла какая-то ошибка');
+                // }
             }
         }
     });
