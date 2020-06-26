@@ -41,10 +41,20 @@
             </div>
         </div>
 
-        <select name="Tag" id="tags-for-objects" class="popup-select">
+        <!-- <select name="Tag" id="tags-for-objects" class="popup-select">
             <option value="null" disabled selected hidden>Select a tag for added objects</option>
             <option value="none">Without tag</option>
-        </select>
+        </select> -->
+
+        <form class="object-name tag-select" autocomplete="off">
+            <div class="autocomplete">
+                <input id="tagsInput" type="text" name="myCountry" placeholder="Select tag">
+            </div>
+            <!-- <button class="tag-select-ok" id="tag-select-ok">Ok</button> -->
+        </form>
+
+
+
 
     </div>
 

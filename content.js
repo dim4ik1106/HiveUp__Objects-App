@@ -349,11 +349,12 @@ function wrapKnownSelection(p) {
 
 
 
-var selectedObject = {};
+
 
 $(objNameOk).mouseup(function (e) {
     e.preventDefault();
     e.stopPropagation();
+    var selectedObject = {};
     if ($(objNameInput).val().length < 1) {
         $(objNameInput).addClass("invalid-value");
         setTimeout(function () {
@@ -377,9 +378,7 @@ $(objNameOk).mouseup(function (e) {
     let name = $(objNameInput).val();
     selectedObject.name = name;
     selectedObject.text = $(curWrappedContent.span).text().replace(/\s+/g, " ");
-    if (curSelctedTag) {
-        selectedObject.tag = curSelctedTag;
-    }
+    selectedObject.tag = curSelctedTag;
     selectedObject.range = curWrappedContent.newRange;
     selectedObject.location = objLocation;
     $(objNameInput).val('');
