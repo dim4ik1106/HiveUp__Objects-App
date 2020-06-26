@@ -41,7 +41,7 @@ body.popup-body {
     height: 40px;
     box-sizing: border-box;
     border: 1px solid #c6c6c6;
-    border-radius: 30px;
+    /* border-radius: 30px; */
     background: #2d2d2d;
     color: #fff;
     text-align: center;
@@ -65,7 +65,7 @@ body.popup-body {
     display: block;
     background: #2d2d2d;
     color: #fff;
-    border-radius: 30px;
+    /* border-radius: 30px; */
     padding: 10px;
     cursor: pointer;
     border: none;
@@ -97,7 +97,7 @@ select:focus {
     width: 100%;
     box-sizing: border-box;
     border-right: none;
-    border-radius: 30px 0px 0px 30px;
+    /* border-radius: 30px 0px 0px 30px; */
     border: 1px solid #c6c6c6;
     border-right: none;
     text-align: center;
@@ -117,7 +117,7 @@ select:focus {
     height: 40px;
     flex: 0 1 20%;
     box-sizing: border-box;
-    border-radius: 0px 30px 30px 0px;
+    /* border-radius: 0px 30px 30px 0px; */
     border: 1px solid #c6c6c6;
     border-left: none;
     color: #fff;
@@ -138,11 +138,11 @@ select:focus {
     align-items: center;
     margin-bottom: 10px;
 }
-
+/* 
 .form_toggle {
     display: inline-block;
     overflow: hidden;
-    /* display: none; */
+    display: none;
 }
 
 .form_toggle-item {
@@ -171,7 +171,7 @@ select:focus {
 .form_toggle .item-2 label {
     border-radius: 0 6px 6px 0;
     border-right: 1px solid #999;
-}
+} */
 
 /* Checked */
 .enable-extansion .form_toggle .item-1 input[type=radio]:checked+label {
@@ -201,6 +201,7 @@ select:focus {
 .radio-cont {
     width: 34px;
     height: 16px;
+    cursor: pointer;
 }
 
 .hidden-checkbox {
@@ -217,6 +218,7 @@ select:focus {
     transition: background-color linear 80ms;
     width: 28px;
     z-index: 0;
+    cursor: pointer;
 }
 
 .checkbox-dot {
@@ -231,6 +233,7 @@ select:focus {
     top: -2px;
     left: -3px;
     z-index: 1;
+    cursor: pointer;
 }
 
 #ext-status+label {
@@ -263,34 +266,6 @@ select:focus {
     transform: translate3d(18px, 0, 0);
 }
 
-.popup-select {
-    border-radius: 30px;
-    display: block;
-    font-size: 14px;
-    font-family: "Arial", sans-serif;
-    font-weight: 400;
-    color: #000;
-    line-height: 1;
-    padding: 0.4em 1.4em 0.4em 1em;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    margin: 0;
-    margin-bottom: 10px;
-    border-radius: 10px;
-    -moz-appearance: none;
-    -webkit-appearance: none;
-    appearance: none;
-    background-image: url(chrome-extension://fjghdamkafelfgomfoacigafkaghfhaa/arrow.svg),
-        linear-gradient(to bottom, #fff 0%, #fff 100%);
-    /* background-image: url(/static/img/arrow.svg),
-        linear-gradient(to bottom, #fff 0%, #fff 100%); */
-    background-repeat: no-repeat, repeat;
-    background-position: right 0.7em top 50%, 0 0;
-    background-size: 0.65em auto, 100%;
-    cursor: pointer;
-}
-
 .autocomplete {
     /*the container must be positioned relative:*/
     position: relative;
@@ -308,7 +283,6 @@ select:focus {
     top: 100%;
     left: 0;
     right: 0;
-    margin-left: 17px;
     margin-right: -1px;
     margin-bottom: 10px;
     max-height: 407px;
@@ -342,8 +316,13 @@ select:focus {
 }
 
 .tag-select input {
-    border-radius: 30px;
+    /* border-radius: 30px; */
     border: 1px solid #c6c6c6;
+}
+
+.tag-select input:focus,
+input[type="text"]:focus {
+    border-color: #000000;
 }
 
 .tag-select-ok {
@@ -362,4 +341,48 @@ select:focus {
     font-style: italic;
     font-size: 14px;
     padding: 2px 10px;
+}
+
+.selected-tags-list {
+    display: flex;
+    height: auto;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.selected-tags-list span {
+    color: #282828;
+    text-decoration: none;
+    position: relative;
+    -webkit-user-drag: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    border-radius: 10px;
+    font-style: italic;
+    font-size: 14px;
+    height: 20px;
+    padding: 0px 10px;
+    align-items: center;
+    padding-right: 0;
+    margin-right: 5px;
+    display: flex;
+    background-color: #ecc1c1;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.selected-tags-list span::after {
+    display: inline-flex;
+    content: 'X';
+    justify-content: center;
+    align-items: center;
+    font-style: normal;
+    margin-left: 5px;
+    border-radius: 0 10px 10px 0;
+    background-color: #c6c6c6;
+    width: 15px;
+    height: 100%;
+    font-size: 12px;
+    padding-right: 3px;
 }

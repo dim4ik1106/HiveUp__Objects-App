@@ -1,8 +1,5 @@
 jQuery(document).ready(function ($) {
     let tagSelector = $('#tags-for-objects'),
-        tagsAndColorsArr = [],
-        tagsArr = [],
-        colorsArr = [],
         statusOnCheckbox = $('#ext-status'),
         tagsInput = $('#tagsInput'),
         tagSelectOkBtn = $('#tag-select-ok'),
@@ -12,6 +9,7 @@ jQuery(document).ready(function ($) {
     checkStateOnCurPage();
     checkTagOnCurPage();
     checkBlockingStateOnCurPage();
+    fillSelectedTagsList(selectedTagsArr);
 
     $(statusOnCheckbox).change(function (e) {
         let onOrOff;
@@ -75,21 +73,6 @@ jQuery(document).ready(function ($) {
         }
     });
 
-    // $(tagSelector).change(function (e) {
-    //     if ($(this).val() != 'null' && $(this).val() != 'none') {
-    //         chrome.tabs.query({
-    //             active: true,
-    //             currentWindow: true
-    //         }, function (tabs) {
-    //             var activeTab = tabs[0];
-    //             chrome.tabs.sendMessage(activeTab.id, {
-    //                 "message": "cur-selected-tag",
-    //                 tag: $(tagSelector).val()
-    //             });
-    //         });
-    //     }
-    // });
-
     chrome.runtime.onMessage.addListener(
         function (request, sender, sendResponse) {
             if (request.message === "extansion-state-answer") {
@@ -111,11 +94,7 @@ jQuery(document).ready(function ($) {
             if (request.message === "get-cur-selected-tag-answer") {
                 console.log(request);
                 if (request.curTag) {
-                    $(tagsInput).val(request.curTag);
-                    console.log('All right, cur tag is "' + request.curTag + '"');
-                } else {
-                    $(tagsInput).val('');
-                    console.log('All NOT RIGHT, cur tag is "' + request.curTag + '"');
+                    fillSelectedTagsList(request.curTag);
                 }
             }
 
@@ -123,21 +102,15 @@ jQuery(document).ready(function ($) {
                 if (request.accept) {
                     $('.popup-body').prepend('<p class="message">Objects will be sent to the model: "' + request.modelName + '".</p>');
                     tagsAndColorsArr = request.tags;
-
-                    // for (let i = 0; i < tagsAndColorsArr.length; i++) {
-                    //     tagsArr.push(tagsAndColorsArr[i][0]);
-                    //     colorsArr.push(tagsAndColorsArr[i][1]);
-                    // }
-
-                    // for (let i = 0; i < tagsArr.length; i++) {
-                    //     if (!$('option').is('[value="' + tagsArr[i] + '"]')) {
-                    //         $(tagSelector).append('<option value="' + tagsArr[i] + '">' + tagsArr[i] + '</option>');
-                    //     }
-                    // }
-
-                    console.log(tagsAndColorsArr);
-                    console.log(tagsArr);
-                    console.log(colorsArr);
+                    // let onloadTagsArr;
+                    for (let i = 0; i < tagsAndColorsArr.length; i++) {
+                        for (let t = 0; t < selectedTagsArr.length; t++) {
+                            if (selectedTagsArr[t][0].toUpperCase() == tagsAndColorsArr[i][0].toUpperCase()) {
+                                console.log(tagsAndColorsArr[i][0]);
+                                tagsAndColorsArr.splice(i, 1);
+                            }
+                        }
+                    }
 
                     $('.option__container').show();
                     autocomplete(document.getElementById("tagsInput"), tagsAndColorsArr);
@@ -154,12 +127,10 @@ jQuery(document).ready(function ($) {
             }
         });
 
-
-
-
-
-
 });
+
+var selectedTagsArr = [],
+    tagsAndColorsArr = [];
 
 function checkStateOnCurPage() {
     chrome.tabs.query({
@@ -204,7 +175,45 @@ function checkCurrentModels() {
     console.log('Check opened models message was sended');
 }
 
-function sendSelectedTagToThePage(val) {
+function fillSelectedTagsList(arr) {
+    for (let i = 0; i < arr.length; i++) {
+        addTagInSelectedTagsList(arr[i]);
+    }
+}
+
+function removeTagFromList(elem) {
+    let tagVal = $(elem).text();
+    $(elem).remove();
+    for (let i = 0; i < selectedTagsArr.length; i++) {
+        if (selectedTagsArr[i][0].toUpperCase() == tagVal.toUpperCase()) {
+            tagsAndColorsArr.push(selectedTagsArr[i]);
+            selectedTagsArr.splice(i, 1);
+        }
+    }
+    sendSelectedTagsToThePage();
+    console.log('NOW SECLECTED TAGS IS: ' + selectedTagsArr);
+}
+
+function addTagInSelectedTagsList(tag) {
+    selectedTagsArr.push(tag);
+    let spanTag = $('<span>' + tag[0] + '</span>');
+    $(spanTag).css('background-color', tag[1]);
+    $(spanTag).click(function(e) {
+        e.preventDefault();
+        removeTagFromList($(this));
+    });
+    $('.selected-tags-list').append(spanTag);
+    sendSelectedTagsToThePage();
+    for (let i = 0; i < tagsAndColorsArr.length; i++) {
+        if (tagsAndColorsArr[i][0].toUpperCase() == tag[0].toUpperCase()) {
+            tagsAndColorsArr.splice(i, 1);
+        }
+    }
+    console.log('NOW SECLECTED TAGS IS: ' + selectedTagsArr);
+    console.log('TAGS IS: ' + tagsAndColorsArr);
+}
+
+function sendSelectedTagsToThePage() {
     chrome.tabs.query({
         active: true,
         currentWindow: true
@@ -212,11 +221,49 @@ function sendSelectedTagToThePage(val) {
         var activeTab = tabs[0];
         chrome.tabs.sendMessage(activeTab.id, {
             "message": "cur-selected-tag",
-            tag: val
+            tag: selectedTagsArr
         });
     });
-    console.log('Sended "' + val + '" tag');
 }
+
+tag2color = function (t) {
+    var baseColor, c, color, j, len1, x;
+    c = 0;
+    t = t != null ? t : 'undefined';
+    baseColor = [0x66, 0x77, 0x66];
+    for (j = 0, len1 = t.length; j < len1; j++) {
+        x = t[j];
+        c = (c + 1217 * x.charCodeAt(0)) % 87911;
+    }
+    baseColor = [(baseColor[0] + (c >> 16) % 0xa0) % 0x100, (baseColor[1] + (c >> 8) % 0xb0) % 0x100, (baseColor[2] + c % 0xc0) % 0x100];
+    color = (decimalToHex(baseColor[0])) + (decimalToHex(baseColor[1])) + (decimalToHex(baseColor[2]));
+    let colorRgb = color.convertToRGB();
+    return colorRgb;
+};
+
+decimalToHex = function (d, padding) {
+    var hex;
+    hex = Number(d).toString(16);
+    padding = typeof padding === "undefined" || padding === null ? padding = 2 : padding;
+    while (hex.length < padding) {
+        hex = "0" + hex;
+    }
+    return hex;
+};
+
+String.prototype.convertToRGB = function(){
+    var aRgbHex = this.match(/.{1,2}/g);
+    var aRgb = [
+        parseInt(aRgbHex[0], 16),
+        parseInt(aRgbHex[1], 16),
+        parseInt(aRgbHex[2], 16)
+    ];
+    aRgb.join(',');
+    let finRgb = 'rgb(' + aRgb + ')';
+    
+    return finRgb;
+};
+
 
 
 
@@ -227,7 +274,6 @@ function autocomplete(inp, arr) {
     var currentFocus;
     /*execute a function when someone writes in the text field:*/
     inp.addEventListener("focus", function (e) {
-        console.log('HELLLOOOOO');
         var a, b, i, val = this.value;
 
         a = document.createElement("DIV");
@@ -241,6 +287,7 @@ function autocomplete(inp, arr) {
             for (i = 0; i < arr.length; i++) {
                 /*check if the item starts with the same letters as the text field value:*/
                 /*create a DIV element for each matching element:*/
+                let curTag = arr[i];
                 b = document.createElement("DIV");
                 c = document.createElement("span");
                 $(c).addClass('autocomplete-tag');
@@ -254,8 +301,9 @@ function autocomplete(inp, arr) {
                 b.appendChild(c);
                 b.addEventListener("click", function (e) {
                     /*insert the value for the autocomplete text field:*/
-                    inp.value = this.getElementsByTagName("input")[0].value;
-                    sendSelectedTagToThePage(this.getElementsByTagName("input")[0].value);
+                    console.log(curTag);
+                    addTagInSelectedTagsList(curTag);
+                    $(inp).val('');
                     /*close the list of autocompleted values,
                     (or any other open lists of autocompleted values:*/
                     closeAllLists();
@@ -269,9 +317,6 @@ function autocomplete(inp, arr) {
         var a, b, i, val = this.value;
         /*close any already open lists of autocompleted values*/
         closeAllLists();
-        // if (!val) {
-        //     return false;
-        // }
         currentFocus = -1;
         /*create a DIV element that will contain the items (values):*/
         a = document.createElement("DIV");
@@ -280,8 +325,31 @@ function autocomplete(inp, arr) {
         /*append the DIV element as a child of the autocomplete container:*/
         this.parentNode.appendChild(a);
         /*for each item in the array...*/
+        let countOfCoincidences = 0;
         if (val.length != 0) {
             console.log(val + 'not empty');
+            b = document.createElement("DIV");
+            c = document.createElement("span");
+            $(c).addClass('autocomplete-tag');
+            let newTag = [val, tag2color(val)];
+            $(c).css('background-color', newTag[1]);
+            /*make the matching letters bold:*/
+            c.innerHTML = '<strong>' + newTag[0] + '</strong>';
+            /*insert a input field that will hold the current array item's value:*/
+            c.innerHTML += "<input type='hidden' value='" + newTag[0] + "'>";
+            /*execute a function when someone clicks on the item value (DIV element):*/
+            b.innerHTML = 'Create new tag: "';
+            b.appendChild(c);
+            b.innerHTML += '"';
+            b.addEventListener("click", function (e) {
+                /*insert the value for the autocomplete text field:*/
+                addTagInSelectedTagsList(newTag);
+                $(inp).val('');
+                /*close the list of autocompleted values,
+                (or any other open lists of autocompleted values:*/
+                closeAllLists();
+            });
+            a.appendChild(b);
             for (i = 0; i < arr.length; i++) {
                 /*check if the item starts with the same letters as the text field value:*/
                 if (arr[i][0].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
@@ -299,13 +367,14 @@ function autocomplete(inp, arr) {
                     b.appendChild(c);
                     b.addEventListener("click", function (e) {
                         /*insert the value for the autocomplete text field:*/
-                        inp.value = this.getElementsByTagName("input")[0].value;
-                        sendSelectedTagToThePage(this.getElementsByTagName("input")[0].value);
+                        addTagInSelectedTagsList(arr[i]);
+                        $(inp).val('');
                         /*close the list of autocompleted values,
                         (or any other open lists of autocompleted values:*/
                         closeAllLists();
                     });
                     a.appendChild(b);
+                    countOfCoincidences++;
                 }
             }
         } else {
@@ -326,8 +395,8 @@ function autocomplete(inp, arr) {
                 b.appendChild(c);
                 b.addEventListener("click", function (e) {
                     /*insert the value for the autocomplete text field:*/
-                    inp.value = this.getElementsByTagName("input")[0].value;
-                    sendSelectedTagToThePage(this.getElementsByTagName("input")[0].value);
+                    addTagInSelectedTagsList(arr[i]);
+                    $(inp).val('');
                     /*close the list of autocompleted values,
                     (or any other open lists of autocompleted values:*/
                     closeAllLists();
@@ -335,7 +404,7 @@ function autocomplete(inp, arr) {
                 a.appendChild(b);
             }
         }
-        sendSelectedTagToThePage(val);
+
     });
 
     // inp.addEventListener("input", function (e) {

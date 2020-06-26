@@ -135,6 +135,9 @@ document.onkeyup = function (e) {
     if (e.keyCode === 13) {
         $(objNameOk).mouseup();
     }
+    if (e.keyCode === 27) {
+        $(document).mouseup();
+    }
     // Отменяем действие браузера
     return false;
 };
@@ -163,8 +166,8 @@ $(document).mouseup(function (e) {
 
         if (selection.toString() != '') {
             contextMenu.css({
-                top: defPosition(e).y + 10 + "px",
-                left: defPosition(e).x + 10 + "px",
+                top: defPosition(e).y + "px",
+                left: defPosition(e).x + "px",
                 display: "block"
             });
             window.curSelectedContent = selection.getRangeAt(0);
@@ -317,8 +320,8 @@ chrome.runtime.onMessage.addListener(
                         e.preventDefault();
                         window.tagString = $(this);
                         deleteMenu.css({
-                            top: defPosition(e).y + 10 + "px",
-                            left: defPosition(e).x + 10 + "px",
+                            top: defPosition(e).y + "px",
+                            left: defPosition(e).x + "px",
                             display: "block"
                         });
                     });
@@ -369,8 +372,8 @@ $(objNameOk).mouseup(function (e) {
         e.preventDefault();
         window.tagString = $(this);
         deleteMenu.css({
-            top: defPosition(e).y + 10 + "px",
-            left: defPosition(e).x + 10 + "px",
+            top: defPosition(e).y + "px",
+            left: defPosition(e).x + "px",
             display: "block"
         });
     });
@@ -460,8 +463,8 @@ window.addEventListener("message", function (request) {
 
 //         if (selection.toString() != '') {
 //             contextMenu.css({
-//                 top: defPosition(e).y + 10 + "px",
-//                 left: defPosition(e).x + 10 + "px",
+//                 top: defPosition(e).y + "px",
+//                 left: defPosition(e).x + "px",
 //                 display: "block"
 //             });
 //             window.curSelectedContent = selection.getRangeAt(0);
