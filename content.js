@@ -260,6 +260,14 @@ chrome.runtime.onMessage.addListener(
             });
             console.log("MESSAGE FROM BG RECIVED");
 
+        } else if (request.message === "create-new-tag") {
+            window.postMessage({
+                "message": "create-new-tag",
+                "tag": request.tag
+            });
+            console.log('msg with tag sended');
+            console.log(request.tag);
+
         } else if (request.message === "highlight_object") {
             console.log("HIGHLIGHTCOMMAND FROM BG RECIDVED");
             var a = request.object.range;
@@ -427,9 +435,6 @@ window.addEventListener("message", function (request) {
             "modelName": request.data.modelName,
             "tags": request.data.tags
         });
-        console.log(request.data.message);
-        console.log(request.data.modelName);
-        console.log(request.data.tags);
     }
 });
 

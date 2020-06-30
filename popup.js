@@ -198,7 +198,7 @@ function addTagInSelectedTagsList(tag) {
     selectedTagsArr.push(tag);
     let spanTag = $('<span>' + tag[0] + '</span>');
     $(spanTag).css('background-color', tag[1]);
-    $(spanTag).click(function(e) {
+    $(spanTag).click(function (e) {
         e.preventDefault();
         removeTagFromList($(this));
     });
@@ -226,6 +226,19 @@ function sendSelectedTagsToThePage() {
     });
 }
 
+function sendNewTagInModel(tag) {
+    chrome.tabs.query({
+        url: 'http://do.hiveup.org/model/*'
+    }, function (tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {
+            "message": "create-new-tag",
+            "tag": tag
+        });
+    });
+    console.log('mess sended');
+    console.log(tag);
+}
+
 tag2color = function (t) {
     var baseColor, c, color, j, len1, x;
     c = 0;
@@ -251,7 +264,7 @@ decimalToHex = function (d, padding) {
     return hex;
 };
 
-String.prototype.convertToRGB = function(){
+String.prototype.convertToRGB = function () {
     var aRgbHex = this.match(/.{1,2}/g);
     var aRgb = [
         parseInt(aRgbHex[0], 16),
@@ -260,7 +273,6 @@ String.prototype.convertToRGB = function(){
     ];
     aRgb.join(',');
     let finRgb = 'rgb(' + aRgb + ')';
-    
     return finRgb;
 };
 
@@ -325,12 +337,12 @@ function autocomplete(inp, arr) {
         /*append the DIV element as a child of the autocomplete container:*/
         this.parentNode.appendChild(a);
         /*for each item in the array...*/
-        let countOfCoincidences = 0;
+        let isAnyExisting = false;
         if (val.length != 0) {
-            console.log(val + 'not empty');
             b = document.createElement("DIV");
             c = document.createElement("span");
-            $(c).addClass('autocomplete-tag');
+            $(c).addClass('autocomplete-tag create-tag-tag');
+            $(b).addClass('create-tag-div');
             let newTag = [val, tag2color(val)];
             $(c).css('background-color', newTag[1]);
             /*make the matching letters bold:*/
@@ -338,12 +350,12 @@ function autocomplete(inp, arr) {
             /*insert a input field that will hold the current array item's value:*/
             c.innerHTML += "<input type='hidden' value='" + newTag[0] + "'>";
             /*execute a function when someone clicks on the item value (DIV element):*/
-            b.innerHTML = 'Create new tag: "';
+            b.innerHTML = 'Create new tag:  ';
             b.appendChild(c);
-            b.innerHTML += '"';
             b.addEventListener("click", function (e) {
                 /*insert the value for the autocomplete text field:*/
                 addTagInSelectedTagsList(newTag);
+                sendNewTagInModel(newTag);
                 $(inp).val('');
                 /*close the list of autocompleted values,
                 (or any other open lists of autocompleted values:*/
@@ -354,6 +366,11 @@ function autocomplete(inp, arr) {
                 /*check if the item starts with the same letters as the text field value:*/
                 if (arr[i][0].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
                     /*create a DIV element for each matching element:*/
+                    if (arr[i][0].toUpperCase() == val.toUpperCase()) {
+                        console.log(arr[i][0].toUpperCase());
+                        console.log(val.toUpperCase());
+                        isAnyExisting = true;
+                    }
                     b = document.createElement("DIV");
                     c = document.createElement("span");
                     $(c).addClass('autocomplete-tag');
@@ -374,11 +391,13 @@ function autocomplete(inp, arr) {
                         closeAllLists();
                     });
                     a.appendChild(b);
-                    countOfCoincidences++;
                 }
             }
+            if (isAnyExisting) {
+                console.log(isAnyExisting);
+                $('.create-tag-div').remove();
+            }
         } else {
-            console.log(val + 'empty');
             for (i = 0; i < arr.length; i++) {
                 /*check if the item starts with the same letters as the text field value:*/
                 /*create a DIV element for each matching element:*/
@@ -407,43 +426,6 @@ function autocomplete(inp, arr) {
 
     });
 
-    // inp.addEventListener("input", function (e) {
-    //     var a, b, i, val = this.value;
-    //     /*close any already open lists of autocompleted values*/
-    //     closeAllLists();
-    //     if (!val) {
-    //         return false;
-    //     }
-    //     currentFocus = -1;
-    //     /*create a DIV element that will contain the items (values):*/
-    //     a = document.createElement("DIV");
-    //     a.setAttribute("id", this.id + "autocomplete-list");
-    //     a.setAttribute("class", "autocomplete-items");
-    //     /*append the DIV element as a child of the autocomplete container:*/
-    //     this.parentNode.appendChild(a);
-    //     /*for each item in the array...*/
-    //     for (i = 0; i < arr.length; i++) {
-    //         /*check if the item starts with the same letters as the text field value:*/
-    //         if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-    //             /*create a DIV element for each matching element:*/
-    //             b = document.createElement("DIV");
-    //             /*make the matching letters bold:*/
-    //             b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-    //             b.innerHTML += arr[i].substr(val.length);
-    //             /*insert a input field that will hold the current array item's value:*/
-    //             b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-    //             /*execute a function when someone clicks on the item value (DIV element):*/
-    //             b.addEventListener("click", function (e) {
-    //                 /*insert the value for the autocomplete text field:*/
-    //                 inp.value = this.getElementsByTagName("input")[0].value;
-    //                 /*close the list of autocompleted values,
-    //                 (or any other open lists of autocompleted values:*/
-    //                 closeAllLists();
-    //             });
-    //             a.appendChild(b);
-    //         }
-    //     }
-    // });
     /*execute a function presses a key on the keyboard:*/
     inp.addEventListener("keydown", function (e) {
         var x = document.getElementById(this.id + "autocomplete-list");

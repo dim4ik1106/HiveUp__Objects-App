@@ -17,7 +17,7 @@ var modelId;
 
 chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
-        
+
         if (request.message === "highlight_command_from_hivup_from_content") {
             chrome.tabs.query({
                 url: request.object.location
@@ -27,14 +27,16 @@ chrome.runtime.onMessage.addListener(
                         "message": "highlight_object",
                         "object": request.object
                     });
-                    chrome.tabs.get(tabs[0].id, function(tab) {
-                        chrome.tabs.highlight({'tabs': tab.index}, function() {});
+                    chrome.tabs.get(tabs[0].id, function (tab) {
+                        chrome.tabs.highlight({
+                            'tabs': tab.index
+                        }, function () {});
                     });
                 } else {
                     chrome.tabs.create({
                         "url": request.object.location
                     }, function (tab) {
-        
+
                         chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tabInfo) {
                             if (changeInfo.status === 'complete' && tabId == tab.id) {
                                 chrome.tabs.sendMessage(tab.id, {
@@ -82,6 +84,17 @@ chrome.runtime.onMessage.addListener(
             });
             console.log("OBJECT FROM PAGE RECIVED");
         }
+
+        // if (request.message === "create-new-tag") {
+        //     chrome.tabs.query({
+        //         url: 'http://do.hiveup.org/model/*'
+        //     }, function (tabs) {
+        //         chrome.tabs.sendMessage(tabs[0].id, {
+        //             "message": "create-new-tag",
+        //             "tag": tag
+        //         });
+        //     });
+        // }
 
         if (request.message === "check_is_here_opened_models") {
             chrome.tabs.query({

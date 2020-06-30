@@ -7,10 +7,10 @@
 
 body.popup-body {
     box-sizing: border-box;
-    background-color: transparent;
+    /* background-color: transparent; */
     margin: 0;
     padding: 10px 10px;
-    background: transparent;
+    background-color: #383838;
     min-width: 350px;
     font-size: 14px;
     font-family: "Arial", sans-serif;
@@ -38,10 +38,10 @@ body.popup-body {
 
 .objects-context-menu .item {
     width: 140px;
-    height: 40px;
+    height: 30px;
     box-sizing: border-box;
     border: 1px solid #c6c6c6;
-    /* border-radius: 30px; */
+    border-radius: 20px;
     background: #2d2d2d;
     color: #fff;
     text-align: center;
@@ -65,11 +65,9 @@ body.popup-body {
     display: block;
     background: #2d2d2d;
     color: #fff;
-    /* border-radius: 30px; */
-    padding: 10px;
     cursor: pointer;
     border: none;
-    margin: 0 auto 10px;
+    margin: 0 auto;
     font-size: 14px;
     width: 100px;
     text-align: center;
@@ -93,11 +91,11 @@ select:focus {
 }
 
 .object-name input {
-    height: 40px;
+    height: 30px;
     width: 100%;
     box-sizing: border-box;
     border-right: none;
-    /* border-radius: 30px 0px 0px 30px; */
+    border-radius: 20px 0 0 20px;
     border: 1px solid #c6c6c6;
     border-right: none;
     text-align: center;
@@ -107,6 +105,10 @@ select:focus {
     background-color: #fff !important;
 }
 
+#tagsInput {
+    border-radius: 0px;
+}
+
 .object-name input.invalid-value {
     border-color: rgba(234, 23, 23, 1) !important;
 }
@@ -114,11 +116,11 @@ select:focus {
 .object-name button {
     min-width: 20px;
     width: 100%;
-    height: 40px;
+    height: 30px;
     flex: 0 1 20%;
     box-sizing: border-box;
-    /* border-radius: 0px 30px 30px 0px; */
-    border: 1px solid #c6c6c6;
+    border-radius: 20px;
+    margin-left: -19px;
     border-left: none;
     color: #fff;
     font-size: 14px;
@@ -138,40 +140,6 @@ select:focus {
     align-items: center;
     margin-bottom: 10px;
 }
-/* 
-.form_toggle {
-    display: inline-block;
-    overflow: hidden;
-    display: none;
-}
-
-.form_toggle-item {
-    float: left;
-    display: inline-block;
-}
-
-.form_toggle-item input[type=radio] {
-    display: none;
-}
-
-.form_toggle-item label {
-    display: inline-block;
-    padding: 0px 15px;
-    line-height: 34px;
-    border: 1px solid #999;
-    border-right: none;
-    cursor: pointer;
-    user-select: none;
-}
-
-.form_toggle .item-1 label {
-    border-radius: 6px 0 0 6px;
-}
-
-.form_toggle .item-2 label {
-    border-radius: 0 6px 6px 0;
-    border-right: 1px solid #999;
-} */
 
 /* Checked */
 .enable-extansion .form_toggle .item-1 input[type=radio]:checked+label {
@@ -195,6 +163,7 @@ select:focus {
     font-family: "Arial", sans-serif;
     margin: 0;
     margin-bottom: 10px;
+    color: #ece4af;
 }
 
 
@@ -222,7 +191,8 @@ select:focus {
 }
 
 .checkbox-dot {
-    background-color: rgb(218, 220, 224);
+    /* background-color: rgb(218, 220, 224); */
+    background-color: #ece4af;
     border-radius: 50%;
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .4);
     display: block;
@@ -249,20 +219,22 @@ select:focus {
 }
 
 #ext-status:checked+label .checkbox-bar {
-    background-color: rgba(138, 180, 248, .5);
+    /* background-color: rgba(138, 180, 248, .5); */
+    background-color: #191919;
 }
 
 #ext-status:checked+label .checkbox-dot {
-    background-color: rgba(138, 180, 248, 1);
+    /* background-color: rgba(138, 180, 248, 1); */
     transform: translate3d(18px, 0, 0);
 }
 
 #blocking-status:checked+label .checkbox-bar {
-    background-color: rgba(138, 180, 248, .5);
+    /* background-color: rgba(138, 180, 248, .5); */
+    background-color: #191919;
 }
 
 #blocking-status:checked+label .checkbox-dot {
-    background-color: rgba(138, 180, 248, 1);
+    /* background-color: rgba(138, 180, 248, 1); */
     transform: translate3d(18px, 0, 0);
 }
 
@@ -275,30 +247,41 @@ select:focus {
 
 .autocomplete-items {
     position: absolute;
-    border: 1px solid #d4d4d4;
-    border-bottom: none;
-    border-top: none;
+        /* border: 1px solid #d4d4d4; */
+    /* border-bottom: none; */
+    /* border-top: none; */
     z-index: 99;
-    /*position the autocomplete items to be the same width as the container:*/
     top: 100%;
     left: 0;
     right: 0;
-    margin-right: -1px;
-    margin-bottom: 10px;
+    /* margin-right: -1px; */
+    /* margin-bottom: 10px; */
     max-height: 407px;
     overflow: scroll;
 }
 
 .autocomplete-items div {
-    padding: 10px;
+    display: flex;
     cursor: pointer;
+    height: 35px;
+    box-sizing: border-box;
     background-color: #fff;
-    border-bottom: 1px solid #d4d4d4;
+    background-color: #383838;
+    /* border-bottom: 1px solid #d4d4d4; */
+    color: #ece4af;
+    justify-content: start;
+    align-items: center;
+    padding: 0 10px;
+}
+
+.create-tag-tag {
+    margin-left: 5px;
 }
 
 .autocomplete-items div:hover {
     /*when hovering an item:*/
     background-color: #e9e9e9;
+    background-color: #2E2E2E;
 }
 
 .autocomplete-active {
@@ -348,6 +331,8 @@ input[type="text"]:focus {
     height: auto;
     width: 100%;
     flex-wrap: wrap;
+    max-height: 180px;
+    overflow: scroll;
 }
 
 .selected-tags-list span {
@@ -380,9 +365,10 @@ input[type="text"]:focus {
     font-style: normal;
     margin-left: 5px;
     border-radius: 0 10px 10px 0;
-    background-color: #c6c6c6;
+    background-color: transparent;
     width: 15px;
     height: 100%;
     font-size: 12px;
     padding-right: 3px;
+    padding-top: 2px;
 }
