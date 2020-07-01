@@ -40,7 +40,8 @@ body.popup-body {
     width: 140px;
     height: 30px;
     box-sizing: border-box;
-    border: 1px solid #c6c6c6;
+    /* border: 1px solid #c6c6c6; */
+    border: none;
     border-radius: 20px;
     background: #2d2d2d;
     color: #fff;
@@ -163,7 +164,7 @@ select:focus {
     font-family: "Arial", sans-serif;
     margin: 0;
     margin-bottom: 10px;
-    color: #ece4af;
+    color: #fff;
 }
 
 
@@ -268,10 +269,24 @@ select:focus {
     background-color: #fff;
     background-color: #383838;
     /* border-bottom: 1px solid #d4d4d4; */
-    color: #ece4af;
+    color: #fff;
     justify-content: start;
     align-items: center;
     padding: 0 10px;
+}
+
+.create-tag-div {
+    padding-left: 20px;
+}
+
+.create-tag-div::before {
+    content: ' ';
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    background: url(chrome-extension://fjghdamkafelfgomfoacigafkaghfhaa/magic-wand.svg) no-repeat center;
+    background-size: contain;
+    margin-right: 5px;
 }
 
 .create-tag-tag {
@@ -303,10 +318,10 @@ select:focus {
     border: 1px solid #c6c6c6;
 }
 
-.tag-select input:focus,
+/* .tag-select input:focus,
 input[type="text"]:focus {
     border-color: #000000;
-}
+} */
 
 .tag-select-ok {
     min-width: 90px;
@@ -349,7 +364,6 @@ input[type="text"]:focus {
     height: 20px;
     padding: 0px 10px;
     align-items: center;
-    padding-right: 0;
     margin-right: 5px;
     display: flex;
     background-color: #ecc1c1;
@@ -358,17 +372,23 @@ input[type="text"]:focus {
 }
 
 .selected-tags-list span::after {
-    display: inline-flex;
+    /* display: inline-flex; */
+    display: none;
     content: 'X';
     justify-content: center;
     align-items: center;
     font-style: normal;
-    margin-left: 5px;
+    margin-left: 0px;
     border-radius: 0 10px 10px 0;
     background-color: transparent;
     width: 15px;
     height: 100%;
     font-size: 12px;
-    padding-right: 3px;
+    padding-right: 0px;
+    margin-right: -7px;
     padding-top: 2px;
+}
+
+.selected-tags-list span:hover::after {
+    display: inline-flex;
 }

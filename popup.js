@@ -17,28 +17,20 @@ jQuery(document).ready(function ($) {
             $(this).attr('checked', false);
             onOrOff = false;
             console.log(onOrOff);
-            chrome.tabs.query({
-                active: true,
-                currentWindow: true
-            }, function (tabs) {
-                var activeTab = tabs[0];
-                chrome.tabs.sendMessage(activeTab.id, {
-                    "message": "stop-extansion",
-                });
+
+            chrome.runtime.sendMessage({
+                "message": "stop-extansion",
             });
+
         } else {
             $(this).attr('checked', true);
             onOrOff = true;
             console.log(onOrOff);
-            chrome.tabs.query({
-                active: true,
-                currentWindow: true
-            }, function (tabs) {
-                var activeTab = tabs[0];
-                chrome.tabs.sendMessage(activeTab.id, {
-                    "message": "start-extansion",
-                });
+
+            chrome.runtime.sendMessage({
+                "message": "start-extansion",
             });
+
         }
     });
 
@@ -48,27 +40,17 @@ jQuery(document).ready(function ($) {
             $(this).attr('checked', false);
             onOrOff = false;
             console.log(onOrOff);
-            chrome.tabs.query({
-                active: true,
-                currentWindow: true
-            }, function (tabs) {
-                var activeTab = tabs[0];
-                chrome.tabs.sendMessage(activeTab.id, {
-                    "message": "stop-block-selection",
-                });
+
+            chrome.runtime.sendMessage({
+                "message": "stop-block-selection",
             });
         } else {
             $(this).attr('checked', true);
             onOrOff = true;
             console.log(onOrOff);
-            chrome.tabs.query({
-                active: true,
-                currentWindow: true
-            }, function (tabs) {
-                var activeTab = tabs[0];
-                chrome.tabs.sendMessage(activeTab.id, {
-                    "message": "start-block-selection",
-                });
+
+            chrome.runtime.sendMessage({
+                "message": "start-block-selection",
             });
         }
     });
@@ -214,15 +196,20 @@ function addTagInSelectedTagsList(tag) {
 }
 
 function sendSelectedTagsToThePage() {
-    chrome.tabs.query({
-        active: true,
-        currentWindow: true
-    }, function (tabs) {
-        var activeTab = tabs[0];
-        chrome.tabs.sendMessage(activeTab.id, {
-            "message": "cur-selected-tag",
-            tag: selectedTagsArr
-        });
+    // chrome.tabs.query({
+    //     active: true,
+    //     currentWindow: true
+    // }, function (tabs) {
+    //     var activeTab = tabs[0];
+    //     chrome.tabs.sendMessage(activeTab.id, {
+    //         "message": "cur-selected-tag",
+    //         tag: selectedTagsArr
+    //     });
+    // });
+
+    chrome.runtime.sendMessage({
+        "message": "cur-selected-tag",
+        tag: selectedTagsArr
     });
 }
 
@@ -346,7 +333,7 @@ function autocomplete(inp, arr) {
             let newTag = [val, tag2color(val)];
             $(c).css('background-color', newTag[1]);
             /*make the matching letters bold:*/
-            c.innerHTML = '<strong>' + newTag[0] + '</strong>';
+            c.innerHTML = newTag[0];
             /*insert a input field that will hold the current array item's value:*/
             c.innerHTML += "<input type='hidden' value='" + newTag[0] + "'>";
             /*execute a function when someone clicks on the item value (DIV element):*/

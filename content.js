@@ -6,27 +6,29 @@ var addObject = $('<button class="item" id="add-object">Add object</button>'),
     selectedContent = $('.selected-content'),
     contMenuContainer = $('<div class="objects-context-menu"></div>'),
     objectNameContainer = $('<div class="objects-context-menu-container" id="name-menu"></div>'),
-    objNameCont = $('<div class="object-name"></div>'),
+    objNameCont = $('<div class="object-name" id="js-object-name-draggable"></div>'),
     highlitedSpan = '<span class="selected-content"></span>',
-    objNameInput = $('<input type="text" id="obj-name-input" placeholder="Object name">'),
-    objNameOk = $('<button id="obj-name-ok-btn" class="popup-button">Ok</button>');
+    objNameInput = $('<input type="text" autocomplete="off" id="obj-name-input" placeholder="Object name">'),
+    objNameOk = $('<button id="obj-name-ok-btn" class="popup-button">Ok</button>'),
+    objNameBTN = $('<button id="obj-name-ok-btn-btn" class="popup-button">Ok</button>');
 
 $(objNameCont).append(objNameInput);
 $(objNameCont).append(objNameOk);
+$(objNameCont).append(objNameBTN);
 $(objectNameContainer).append(objNameCont);
 
 $(contMenuContainer).append(addObject);
 $(contextMenu).append(contMenuContainer);
 
-var deleteMenu = $('<div class="objects-context-menu-container"></div>'),
+var deleteMenu = $('<div class="objects-context-menu-container" id="delete-menu"></div>'),
     deleteMenuContainer = $('<div class="objects-context-menu"></div>'),
-    deleteObject = $('<button class="item" id="add-object">Remove object</button>');
+    deleteObject = $('<button class="item" id="add-object">Clear selection</button>');
 
 $(deleteMenuContainer).append(deleteObject);
 $(deleteMenu).append(deleteMenuContainer);
 
 $(deleteObject).click(function (e) {
-    e.preventDefault();
+    // e.preventDefault();
     e.stopPropagation();
     unwrapSelection(tagString);
     $(deleteMenu).hide();
@@ -125,6 +127,76 @@ var selectdObjSring,
 $("body").append(contextMenu);
 $("body").append(objectNameContainer);
 $('body').append(deleteMenu);
+
+function gggggggg() {
+    $('#name-menu').draggable({
+        handle: ['div', 'input', 'button'],
+        drag: function(event, ui) {
+            console.log('drag');
+        },
+        start: function(event, ui) {
+            console.log('start');
+        },
+        create: function(event, ui) {
+            console.log('create');
+        }
+    });
+    $('#add-menu').draggable({
+        handle: ['div', 'input', 'button'],
+        drag: function(event, ui) {
+            console.log('drag');
+        },
+        start: function(event, ui) {
+            console.log('start');
+        },
+        create: function(event, ui) {
+            console.log('create');
+        }
+    });
+    $('#delete-menu').draggable({
+        handle: ['div', 'input', 'button'],
+        drag: function(event, ui) {
+            console.log('drag');
+        },
+        start: function(event, ui) {
+            console.log('start');
+        },
+        create: function(event, ui) {
+            console.log('create');
+        }
+    });
+    $('#add-object').draggable({
+        handle: ['div', 'input', 'button'],
+        drag: function(event, ui) {
+            console.log('drag');
+        },
+        start: function(event, ui) {
+            console.log('start');
+        },
+        create: function(event, ui) {
+            console.log('create');
+        }
+    });
+
+    $('#obj-name-ok-btn').draggable();
+    $('#obj-name-ok-btn-btn').draggable();
+
+}
+
+$(document).ready(function () {
+    setTimeout(gggggggg, 1000);
+    // gggggggg();
+    
+    chrome.runtime.sendMessage({
+        "message": "ext-status-question"
+    });
+    chrome.runtime.sendMessage({
+        "message": "blocking-status-question"
+    });
+    chrome.runtime.sendMessage({
+        "message": "selected-tags-question"
+    });
+});
 
 var listenerState = false;
 var blockSelectionState = true;
@@ -325,7 +397,7 @@ chrome.runtime.onMessage.addListener(
                     $(reverseAddedSelection.span).addClass('full-added-object');
 
                     $(reverseAddedSelection.span).click(function (e) {
-                        e.preventDefault();
+                        // e.preventDefault();
                         window.tagString = $(this);
                         deleteMenu.css({
                             top: defPosition(e).y + "px",
@@ -363,7 +435,7 @@ function wrapKnownSelection(p) {
 
 
 $(objNameOk).mouseup(function (e) {
-    e.preventDefault();
+    // e.preventDefault();
     e.stopPropagation();
     var selectedObject = {};
     if ($(objNameInput).val().length < 1) {
@@ -377,7 +449,7 @@ $(objNameOk).mouseup(function (e) {
     $(curWrappedContent.span).addClass('full-added-object');
 
     $(curWrappedContent.span).click(function (e) {
-        e.preventDefault();
+        // e.preventDefault();
         window.tagString = $(this);
         deleteMenu.css({
             top: defPosition(e).y + "px",
@@ -400,13 +472,10 @@ $(objNameOk).mouseup(function (e) {
     });
 
     console.log(selectedObject);
-
-
 });
 
-
 $(addObject).mouseup(function (e) {
-    e.preventDefault();
+    // e.preventDefault();
     e.stopPropagation();
 
     contextMenu.hide();
@@ -418,6 +487,7 @@ $(addObject).mouseup(function (e) {
     });
     document.getElementById('obj-name-input').focus();
 });
+
 
 window.addEventListener("message", function (request) {
     if (request.data.message && (request.data.message == "highlight_command_from_hiveup")) {
