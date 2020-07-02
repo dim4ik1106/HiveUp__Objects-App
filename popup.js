@@ -81,13 +81,14 @@ jQuery(document).ready(function ($) {
             }
 
             if (request.message === "get_model_name_and_tags-answer") {
+                $('.extansion-message.wait').remove();
                 if (request.accept) {
-                    $('.popup-body').prepend('<p class="message">Objects will be sent to the model: "' + request.modelName + '".</p>');
+                    $('.popup-body').prepend('<p class="extansion-message">Objects will be sent to the model: "' + request.modelName + '".</p>');
                     tagsAndColorsArr = request.tags;
                     // let onloadTagsArr;
                     for (let i = 0; i < tagsAndColorsArr.length; i++) {
                         for (let t = 0; t < selectedTagsArr.length; t++) {
-                            if (selectedTagsArr[t][0].toUpperCase() == tagsAndColorsArr[i][0].toUpperCase()) {
+                            if (selectedTagsArr[t][0] == tagsAndColorsArr[i][0]) {
                                 console.log(tagsAndColorsArr[i][0]);
                                 tagsAndColorsArr.splice(i, 1);
                             }
@@ -99,10 +100,10 @@ jQuery(document).ready(function ($) {
 
                 } else {
                     if (request.tabsCount == 0) {
-                        $('.popup-body').prepend('<a href="http://do.hiveup.org/done/" target="_blank" rel="HiveUp" class="popup-button">Open HiveUp</a>');
-                        $('.popup-body').prepend('<p class="message">Please open your model on HiveUp to use extension.</p>');
+                        $('.popup-body').prepend('<a href="http://do.hiveup.org/done/" target="_blank" rel="HiveUp" class="popup-button rounded">Open projects</a>');
+                        $('.popup-body').prepend('<p class="extansion-message">Please open your model on HiveUp to use extension.</p>');
                     } else if (request.tabsCount > 1) {
-                        $('.popup-body').prepend('<p class="message">Please open only one model on HiveUp to use extension.</p>');
+                        $('.popup-body').prepend('<p class="extansion-message">Please open only one model on HiveUp to use extension.</p>');
                     }
                 }
                 console.log(request);
@@ -154,7 +155,7 @@ function checkCurrentModels() {
     chrome.runtime.sendMessage({
         "message": "check_is_here_opened_models"
     });
-    console.log('Check opened models message was sended');
+    $('.popup-body').prepend('<p class="extansion-message wait">Please wait while the model is loads and open extansion again.</p>');
 }
 
 function fillSelectedTagsList(arr) {
@@ -167,7 +168,7 @@ function removeTagFromList(elem) {
     let tagVal = $(elem).text();
     $(elem).remove();
     for (let i = 0; i < selectedTagsArr.length; i++) {
-        if (selectedTagsArr[i][0].toUpperCase() == tagVal.toUpperCase()) {
+        if (selectedTagsArr[i][0] == tagVal) {
             tagsAndColorsArr.push(selectedTagsArr[i]);
             selectedTagsArr.splice(i, 1);
         }
@@ -187,7 +188,7 @@ function addTagInSelectedTagsList(tag) {
     $('.selected-tags-list').append(spanTag);
     sendSelectedTagsToThePage();
     for (let i = 0; i < tagsAndColorsArr.length; i++) {
-        if (tagsAndColorsArr[i][0].toUpperCase() == tag[0].toUpperCase()) {
+        if (tagsAndColorsArr[i][0] == tag[0]) {
             tagsAndColorsArr.splice(i, 1);
         }
     }
@@ -196,17 +197,6 @@ function addTagInSelectedTagsList(tag) {
 }
 
 function sendSelectedTagsToThePage() {
-    // chrome.tabs.query({
-    //     active: true,
-    //     currentWindow: true
-    // }, function (tabs) {
-    //     var activeTab = tabs[0];
-    //     chrome.tabs.sendMessage(activeTab.id, {
-    //         "message": "cur-selected-tag",
-    //         tag: selectedTagsArr
-    //     });
-    // });
-
     chrome.runtime.sendMessage({
         "message": "cur-selected-tag",
         tag: selectedTagsArr

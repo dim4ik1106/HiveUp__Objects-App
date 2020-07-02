@@ -16,6 +16,39 @@ var blockingStatus = false;
 var curSelctedTags;
 var regexp = /\/\bmodel\/\b\w*\//gi;
 var modelId;
+var isHereAnswer = true;
+var modelTabId;
+
+// function checkingModelStatus() {
+//     if (extStatus) {
+//         chrome.tabs.query({
+//             url: 'http://do.hiveup.org/model/*'
+//         }, function (tabs) {
+//             if (tabs.length != 1) {
+//                 for (let i = 0; i < tabs.length; i++) {
+//                     var activeTab = tabs[i];
+//                     chrome.tabs.sendMessage(activeTab.id, {
+//                         "message": "stop-extansion",
+//                     });
+//                 }
+//             }
+//         });
+//     }
+// }
+
+// function sendModelAndTagsRequest() {
+//     if (!isHereAnswer) return;
+//     try {
+//         chrome.tabs.sendMessage(modelTabId, {
+//             "message": "get_model_name_and_tags"
+//         });
+//     } catch (e) {
+//         console.log(e.onMessage);
+//     }
+//     console.log(modelTabId);
+// }
+
+// setInterval(sendModelAndTagsRequest, 100);
 
 
 chrome.runtime.onMessage.addListener(
@@ -88,7 +121,9 @@ chrome.runtime.onMessage.addListener(
         }
 
         if (request.message === "start-extansion") {
-            chrome.tabs.query({currentWindow: true}, function (tabs) {
+            chrome.tabs.query({
+                currentWindow: true
+            }, function (tabs) {
                 for (let i = 0; i < tabs.length; i++) {
                     var activeTab = tabs[i];
                     chrome.tabs.sendMessage(activeTab.id, {
@@ -99,7 +134,9 @@ chrome.runtime.onMessage.addListener(
             extStatus = true;
         }
         if (request.message === "stop-extansion") {
-            chrome.tabs.query({currentWindow: true}, function (tabs) {
+            chrome.tabs.query({
+                currentWindow: true
+            }, function (tabs) {
                 for (let i = 0; i < tabs.length; i++) {
                     var activeTab = tabs[i];
                     chrome.tabs.sendMessage(activeTab.id, {
@@ -111,7 +148,9 @@ chrome.runtime.onMessage.addListener(
         }
         if (request.message === "ext-status-question") {
             if (extStatus) {
-                chrome.tabs.query({currentWindow: true}, function (tabs) {
+                chrome.tabs.query({
+                    currentWindow: true
+                }, function (tabs) {
                     for (let i = 0; i < tabs.length; i++) {
                         var activeTab = tabs[i];
                         chrome.tabs.sendMessage(activeTab.id, {
@@ -120,7 +159,9 @@ chrome.runtime.onMessage.addListener(
                     }
                 });
             } else {
-                chrome.tabs.query({currentWindow: true}, function (tabs) {
+                chrome.tabs.query({
+                    currentWindow: true
+                }, function (tabs) {
                     for (let i = 0; i < tabs.length; i++) {
                         var activeTab = tabs[i];
                         chrome.tabs.sendMessage(activeTab.id, {
@@ -133,7 +174,9 @@ chrome.runtime.onMessage.addListener(
 
 
         if (request.message === "start-block-selection") {
-            chrome.tabs.query({currentWindow: true}, function (tabs) {
+            chrome.tabs.query({
+                currentWindow: true
+            }, function (tabs) {
                 for (let i = 0; i < tabs.length; i++) {
                     var activeTab = tabs[i];
                     chrome.tabs.sendMessage(activeTab.id, {
@@ -144,7 +187,9 @@ chrome.runtime.onMessage.addListener(
             blockingStatus = true;
         }
         if (request.message === "stop-block-selection") {
-            chrome.tabs.query({currentWindow: true}, function (tabs) {
+            chrome.tabs.query({
+                currentWindow: true
+            }, function (tabs) {
                 for (let i = 0; i < tabs.length; i++) {
                     var activeTab = tabs[i];
                     chrome.tabs.sendMessage(activeTab.id, {
@@ -156,7 +201,9 @@ chrome.runtime.onMessage.addListener(
         }
         if (request.message === "blocking-status-question") {
             if (blockingStatus) {
-                chrome.tabs.query({currentWindow: true}, function (tabs) {
+                chrome.tabs.query({
+                    currentWindow: true
+                }, function (tabs) {
                     for (let i = 0; i < tabs.length; i++) {
                         var activeTab = tabs[i];
                         chrome.tabs.sendMessage(activeTab.id, {
@@ -165,7 +212,9 @@ chrome.runtime.onMessage.addListener(
                     }
                 });
             } else {
-                chrome.tabs.query({currentWindow: true}, function (tabs) {
+                chrome.tabs.query({
+                    currentWindow: true
+                }, function (tabs) {
                     for (let i = 0; i < tabs.length; i++) {
                         var activeTab = tabs[i];
                         chrome.tabs.sendMessage(activeTab.id, {
@@ -178,7 +227,9 @@ chrome.runtime.onMessage.addListener(
 
         if (request.message === "cur-selected-tag") {
             curSelctedTags = request.tag;
-            chrome.tabs.query({currentWindow: true}, function (tabs) {
+            chrome.tabs.query({
+                currentWindow: true
+            }, function (tabs) {
                 for (let i = 0; i < tabs.length; i++) {
                     var activeTab = tabs[i];
                     chrome.tabs.sendMessage(activeTab.id, {
@@ -189,7 +240,9 @@ chrome.runtime.onMessage.addListener(
             });
         }
         if (request.message === "selected-tags-question") {
-            chrome.tabs.query({currentWindow: true}, function (tabs) {
+            chrome.tabs.query({
+                currentWindow: true
+            }, function (tabs) {
                 for (let i = 0; i < tabs.length; i++) {
                     var activeTab = tabs[i];
                     chrome.tabs.sendMessage(activeTab.id, {
@@ -198,7 +251,10 @@ chrome.runtime.onMessage.addListener(
                     });
                 }
             });
+        }
 
+        if (request.message === "stop-request-sending") {
+            isHereAnswer = true;
         }
 
 
@@ -212,6 +268,17 @@ chrome.runtime.onMessage.addListener(
                         accept: false,
                         tabsCount: 0
                     });
+                    chrome.tabs.query({
+                        currentWindow: true
+                    }, function (tabs) {
+                        for (let i = 0; i < tabs.length; i++) {
+                            var activeTab = tabs[i];
+                            chrome.tabs.sendMessage(activeTab.id, {
+                                "message": "stop-extansion",
+                            });
+                        }
+                    });
+                    extStatus = false;
 
                 } else if (tabs.length > 1) {
                     chrome.runtime.sendMessage({
@@ -219,18 +286,27 @@ chrome.runtime.onMessage.addListener(
                         accept: false,
                         tabsCount: tabs.length
                     });
-                } else if (tabs.length == 1) {
-                    modelId = tabs[0].url.match(regexp).toString().replace('/model', '');
+                    chrome.tabs.query({
+                        currentWindow: true
+                    }, function (tabs) {
+                        for (let i = 0; i < tabs.length; i++) {
+                            var activeTab = tabs[i];
+                            chrome.tabs.sendMessage(activeTab.id, {
+                                "message": "stop-extansion",
+                            });
+                        }
+                    });
+                    extStatus = false;
 
+                } else if (tabs.length == 1) {
+                    // isHereAnswer = false;
+                    // modelTabId = tabs[0].id;
+                    // modelId = tabs[0].url.match(regexp).toString().replace('/model', '');
+                    
+                    // sendModelAndTagsRequest(tabs[0].id);
                     chrome.tabs.sendMessage(tabs[0].id, {
                         "message": "get_model_name_and_tags"
                     });
-
-                    // chrome.runtime.sendMessage({
-                    //     message: 'check_is_here_opened_models-answer',
-                    //     accept: true,
-                    //     modelId: modelId
-                    // });
                 }
                 console.log(tabs);
             });

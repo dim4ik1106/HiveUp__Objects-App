@@ -53,6 +53,7 @@ body.popup-body {
 
 .objects-context-menu .item:hover,
 .popup-button:hover,
+.popup-button.rounded:hover,
 .object-name button:hover {
     background: #101010;
 }
@@ -159,7 +160,7 @@ select:focus {
     background: #bbffbb;
 }
 
-.message {
+.extansion-message {
     font-size: 14px;
     font-family: "Arial", sans-serif;
     margin: 0;
@@ -167,6 +168,9 @@ select:focus {
     color: #fff;
 }
 
+.extansion-message.wait {
+    margin-bottom: 0;
+}
 
 .radio-cont {
     width: 34px;
@@ -305,7 +309,7 @@ select:focus {
     color: #ffffff;
 }
 
-.option .message {
+.option .extansion-message {
     margin: 0;
 }
 
@@ -372,8 +376,8 @@ input[type="text"]:focus {
 }
 
 .selected-tags-list span::after {
-    /* display: inline-flex; */
-    display: none;
+    display: inline-flex;
+    /* display: none; */
     content: 'X';
     justify-content: center;
     align-items: center;
@@ -387,8 +391,16 @@ input[type="text"]:focus {
     padding-right: 0px;
     margin-right: -7px;
     padding-top: 2px;
+    opacity: 0;
 }
 
 .selected-tags-list span:hover::after {
-    display: inline-flex;
+    opacity: 1;
+    /* display: inline-flex; */
+}
+
+.popup-button.rounded {
+    padding: 5px 10px;
+    background-color: #565656;
+    border-radius: 20px;
 }

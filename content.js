@@ -505,6 +505,9 @@ window.addEventListener("message", function (request) {
             "modelName": request.data.modelName,
             "tags": request.data.tags
         });
+        chrome.runtime.sendMessage({
+            "message": "stop-request-sending",
+        });
     }
 });
 
