@@ -9,12 +9,11 @@ var addObject = $('<button class="item" id="add-object">Add object</button>'),
     objNameCont = $('<div class="object-name" id="js-object-name-draggable"></div>'),
     highlitedSpan = '<span class="selected-content"></span>',
     objNameInput = $('<input type="text" autocomplete="off" id="obj-name-input" placeholder="Object name">'),
-    objNameOk = $('<button id="obj-name-ok-btn" class="popup-button">Ok</button>'),
-    objNameBTN = $('<button id="obj-name-ok-btn-btn" class="popup-button">Ok</button>');
+    objNameOk = $('<button id="obj-name-ok-btn" class="popup-button">Ok</button>');
+    // objNameBTN = $('<button id="obj-name-ok-btn-btn" class="popup-button">Ok</button>');
 
 $(objNameCont).append(objNameInput);
 $(objNameCont).append(objNameOk);
-$(objNameCont).append(objNameBTN);
 $(objectNameContainer).append(objNameCont);
 
 $(contMenuContainer).append(addObject);
@@ -127,76 +126,6 @@ var selectdObjSring,
 $("body").append(contextMenu);
 $("body").append(objectNameContainer);
 $('body').append(deleteMenu);
-
-function gggggggg() {
-    $('#name-menu').draggable({
-        handle: ['div', 'input', 'button'],
-        drag: function(event, ui) {
-            console.log('drag');
-        },
-        start: function(event, ui) {
-            console.log('start');
-        },
-        create: function(event, ui) {
-            console.log('create');
-        }
-    });
-    $('#add-menu').draggable({
-        handle: ['div', 'input', 'button'],
-        drag: function(event, ui) {
-            console.log('drag');
-        },
-        start: function(event, ui) {
-            console.log('start');
-        },
-        create: function(event, ui) {
-            console.log('create');
-        }
-    });
-    $('#delete-menu').draggable({
-        handle: ['div', 'input', 'button'],
-        drag: function(event, ui) {
-            console.log('drag');
-        },
-        start: function(event, ui) {
-            console.log('start');
-        },
-        create: function(event, ui) {
-            console.log('create');
-        }
-    });
-    $('#add-object').draggable({
-        handle: ['div', 'input', 'button'],
-        drag: function(event, ui) {
-            console.log('drag');
-        },
-        start: function(event, ui) {
-            console.log('start');
-        },
-        create: function(event, ui) {
-            console.log('create');
-        }
-    });
-
-    $('#obj-name-ok-btn').draggable();
-    $('#obj-name-ok-btn-btn').draggable();
-
-}
-
-$(document).ready(function () {
-    setTimeout(gggggggg, 1000);
-    // gggggggg();
-    
-    chrome.runtime.sendMessage({
-        "message": "ext-status-question"
-    });
-    chrome.runtime.sendMessage({
-        "message": "blocking-status-question"
-    });
-    chrome.runtime.sendMessage({
-        "message": "selected-tags-question"
-    });
-});
 
 var listenerState = false;
 var blockSelectionState = true;

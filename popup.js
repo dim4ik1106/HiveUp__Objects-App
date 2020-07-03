@@ -192,8 +192,7 @@ function addTagInSelectedTagsList(tag) {
             tagsAndColorsArr.splice(i, 1);
         }
     }
-    console.log('NOW SECLECTED TAGS IS: ' + selectedTagsArr);
-    console.log('TAGS IS: ' + tagsAndColorsArr);
+
 }
 
 function sendSelectedTagsToThePage() {
@@ -339,29 +338,34 @@ function autocomplete(inp, arr) {
                 closeAllLists();
             });
             a.appendChild(b);
+            for (let k = 0; k < selectedTagsArr.length; k++) {
+                if (selectedTagsArr[k][0].toUpperCase() == val.toUpperCase()) {
+                    isAnyExisting = true;
+                }
+            }
             for (i = 0; i < arr.length; i++) {
                 /*check if the item starts with the same letters as the text field value:*/
                 if (arr[i][0].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
                     /*create a DIV element for each matching element:*/
-                    if (arr[i][0].toUpperCase() == val.toUpperCase()) {
-                        console.log(arr[i][0].toUpperCase());
-                        console.log(val.toUpperCase());
+                    let curTag = arr[i];
+                    
+                    if (curTag[0].toUpperCase() == val.toUpperCase()) {
                         isAnyExisting = true;
                     }
                     b = document.createElement("DIV");
                     c = document.createElement("span");
                     $(c).addClass('autocomplete-tag');
-                    $(c).css('background-color', arr[i][1]);
+                    $(c).css('background-color', curTag[1]);
                     /*make the matching letters bold:*/
-                    c.innerHTML = "<strong>" + arr[i][0].substr(0, val.length) + "</strong>";
-                    c.innerHTML += arr[i][0].substr(val.length);
+                    c.innerHTML = "<strong>" + curTag[0].substr(0, val.length) + "</strong>";
+                    c.innerHTML += curTag[0].substr(val.length);
                     /*insert a input field that will hold the current array item's value:*/
-                    c.innerHTML += "<input type='hidden' value='" + arr[i][0] + "'>";
+                    c.innerHTML += "<input type='hidden' value='" + curTag[0] + "'>";
                     /*execute a function when someone clicks on the item value (DIV element):*/
                     b.appendChild(c);
                     b.addEventListener("click", function (e) {
                         /*insert the value for the autocomplete text field:*/
-                        addTagInSelectedTagsList(arr[i]);
+                        addTagInSelectedTagsList(curTag);
                         $(inp).val('');
                         /*close the list of autocompleted values,
                         (or any other open lists of autocompleted values:*/
