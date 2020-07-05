@@ -155,7 +155,7 @@ function checkCurrentModels() {
     chrome.runtime.sendMessage({
         "message": "check_is_here_opened_models"
     });
-    $('.popup-body').prepend('<p class="extansion-message wait">Please wait while the model is loads and open extansion again.</p>');
+    $('.popup-body').prepend('<p class="extansion-message wait">Please wait while the model is loads and open extension again.</p>');
 }
 
 function fillSelectedTagsList(arr) {
@@ -225,8 +225,10 @@ tag2color = function (t) {
         c = (c + 1217 * x.charCodeAt(0)) % 87911;
     }
     baseColor = [(baseColor[0] + (c >> 16) % 0xa0) % 0x100, (baseColor[1] + (c >> 8) % 0xb0) % 0x100, (baseColor[2] + c % 0xc0) % 0x100];
-    color = (decimalToHex(baseColor[0])) + (decimalToHex(baseColor[1])) + (decimalToHex(baseColor[2]));
-    let colorRgb = color.convertToRGB();
+    console.log(baseColor);
+    let colorRgb = 'rgb(' + baseColor.join(',') + ')';
+    // color = (decimalToHex(baseColor[0])) + (decimalToHex(baseColor[1])) + (decimalToHex(baseColor[2]));
+    // let colorRgb = color.convertToRGB();
     return colorRgb;
 };
 
