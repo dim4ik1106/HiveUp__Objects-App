@@ -146,31 +146,70 @@ chrome.runtime.onMessage.addListener(
             });
             extStatus = false;
         }
+
         if (request.message === "ext-status-question") {
-            if (extStatus) {
-                chrome.tabs.query({
-                    currentWindow: true
-                }, function (tabs) {
-                    for (let i = 0; i < tabs.length; i++) {
-                        var activeTab = tabs[i];
+            chrome.tabs.query({
+                currentWindow: true
+            }, function (tabs) {
+                for (let i = 0; i < tabs.length; i++) {
+                    var activeTab = tabs[i];
+                    if (extStatus) {
                         chrome.tabs.sendMessage(activeTab.id, {
                             "message": "start-extansion",
                         });
-                    }
-                });
-            } else {
-                chrome.tabs.query({
-                    currentWindow: true
-                }, function (tabs) {
-                    for (let i = 0; i < tabs.length; i++) {
-                        var activeTab = tabs[i];
+                    } else {
                         chrome.tabs.sendMessage(activeTab.id, {
                             "message": "stop-extansion",
                         });
                     }
+
+                    if (blockingStatus) {
+                        chrome.tabs.sendMessage(activeTab.id, {
+                            "message": "start-block-selection",
+                        });
+                    } else {
+                        chrome.tabs.sendMessage(activeTab.id, {
+                            "message": "stop-block-selection",
+                        });
+                    }
+
+                    chrome.tabs.sendMessage(activeTab.id, {
+                        "message": "cur-selected-tag",
+                        "tag": curSelctedTags
+                    });
+
+                }
+                chrome.runtime.sendMessage({
+                    "message": "get-cur-selected-tag-answer",
+                    "curTag": curSelctedTags
                 });
-            }
+            });
         }
+        // if (request.message === "ext-status-question") {
+        //     if (extStatus) {
+        //         chrome.tabs.query({
+        //             currentWindow: true
+        //         }, function (tabs) {
+        //             for (let i = 0; i < tabs.length; i++) {
+        //                 var activeTab = tabs[i];
+        //                 chrome.tabs.sendMessage(activeTab.id, {
+        //                     "message": "start-extansion",
+        //                 });
+        //             }
+        //         });
+        //     } else {
+        //         chrome.tabs.query({
+        //             currentWindow: true
+        //         }, function (tabs) {
+        //             for (let i = 0; i < tabs.length; i++) {
+        //                 var activeTab = tabs[i];
+        //                 chrome.tabs.sendMessage(activeTab.id, {
+        //                     "message": "stop-extansion",
+        //                 });
+        //             }
+        //         });
+        //     }
+        // }
 
 
         if (request.message === "start-block-selection") {
@@ -302,7 +341,7 @@ chrome.runtime.onMessage.addListener(
                     // isHereAnswer = false;
                     // modelTabId = tabs[0].id;
                     // modelId = tabs[0].url.match(regexp).toString().replace('/model', '');
-                    
+
                     // sendModelAndTagsRequest(tabs[0].id);
                     chrome.tabs.sendMessage(tabs[0].id, {
                         "message": "get_model_name_and_tags"

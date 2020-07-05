@@ -10,7 +10,7 @@ var addObject = $('<button class="item" id="add-object">Add object</button>'),
     highlitedSpan = '<span class="selected-content"></span>',
     objNameInput = $('<input type="text" autocomplete="off" id="obj-name-input" placeholder="Object name">'),
     objNameOk = $('<button id="obj-name-ok-btn" class="popup-button">Ok</button>');
-    // objNameBTN = $('<button id="obj-name-ok-btn-btn" class="popup-button">Ok</button>');
+// objNameBTN = $('<button id="obj-name-ok-btn-btn" class="popup-button">Ok</button>');
 
 $(objNameCont).append(objNameInput);
 $(objNameCont).append(objNameOk);
@@ -21,10 +21,17 @@ $(contextMenu).append(contMenuContainer);
 
 var deleteMenu = $('<div class="objects-context-menu-container" id="delete-menu"></div>'),
     deleteMenuContainer = $('<div class="objects-context-menu"></div>'),
-    deleteObject = $('<button class="item" id="add-object">Clear selection</button>');
+    deleteObject = $('<button class="item" id="delete-object">Clear selection</button>');
 
 $(deleteMenuContainer).append(deleteObject);
 $(deleteMenu).append(deleteMenuContainer);
+
+var nameMenu = $('<div class="objects-context-menu-container" id="object-name-menu"></div>'),
+    nameContainer = $('<div class="objects-context-menu"></div>'),
+    nameObject = $('<button class="item" id="object-name"></button>');
+
+$(nameContainer).append(nameObject);
+$(nameMenu).append(nameContainer);
 
 $(deleteObject).click(function (e) {
     // e.preventDefault();
@@ -126,6 +133,7 @@ var selectdObjSring,
 $("body").append(contextMenu);
 $("body").append(objectNameContainer);
 $('body').append(deleteMenu);
+$('body').append(nameMenu);
 
 var listenerState = false;
 var blockSelectionState = true;
@@ -142,6 +150,12 @@ document.onkeyup = function (e) {
     // Отменяем действие браузера
     return false;
 };
+
+$(document).ready(function () {
+    chrome.runtime.sendMessage({
+        "message": "ext-status-question"
+    });
+});
 
 
 
@@ -334,10 +348,21 @@ chrome.runtime.onMessage.addListener(
                             display: "block"
                         });
                     });
+                    $(reverseAddedSelection.span).attr('data-object-name', request.object.name);
+                    $(reverseAddedSelection.span).mouseover(function (e) {
+                        $(nameObject).text($(this).attr('data-object-name'));
+                        nameMenu.css({
+                            display: "block",
+                            top: $(this).offset().top - 30 + "px",
+                            left: $(this).offset().left + ($(this).width() / 2) - ($(nameObject).width() / 2) + "px"
+                        });
+                    });
+                    $(reverseAddedSelection.span).mouseout(function (e) {
+                        $(nameMenu).hide();
+                    });
 
                     $('html, body').animate({
-                        scrollTop: $(reverseAddedSelection.span).offset().top
-                        // scrollTop: $(".full-added-object").offset().top
+                        scrollTop: $(reverseAddedSelection.span).offset().top - 100
                     }, 1000);
 
                     window.getSelection().removeAllRanges();
@@ -389,6 +414,21 @@ $(objNameOk).mouseup(function (e) {
 
     let name = $(objNameInput).val();
     selectedObject.name = name;
+
+    $(curWrappedContent.span).attr('data-object-name', selectedObject.name);
+    $(curWrappedContent.span).mouseover(function (e) {
+        $(nameObject).text($(this).attr('data-object-name'));
+        console.log($(nameObject).width());
+        nameMenu.css({
+            display: "block",
+            top: $(this).offset().top - 30 + "px",
+            left: $(this).offset().left + ($(this).width() / 2) - ($(nameObject).width() / 2) + "px"
+        });
+    });
+    $(curWrappedContent.span).mouseout(function (e) {
+        $(nameMenu).hide();
+    });
+
     selectedObject.text = $(curWrappedContent.span).text().replace(/\s+/g, " ");
     selectedObject.tag = curSelctedTag;
     selectedObject.range = curWrappedContent.newRange;
