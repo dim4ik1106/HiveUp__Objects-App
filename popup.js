@@ -215,23 +215,6 @@ function sendNewTagInModel(tag) {
     console.log(tag);
 }
 
-tag2color = function (t) {
-    var baseColor, c, color, j, len1, x;
-    c = 0;
-    t = t != null ? t : 'undefined';
-    baseColor = [0x66, 0x77, 0x66];
-    for (j = 0, len1 = t.length; j < len1; j++) {
-        x = t[j];
-        c = (c + 1217 * x.charCodeAt(0)) % 87911;
-    }
-    baseColor = [(baseColor[0] + (c >> 16) % 0xa0) % 0x100, (baseColor[1] + (c >> 8) % 0xb0) % 0x100, (baseColor[2] + c % 0xc0) % 0x100];
-    console.log(baseColor);
-    let colorRgb = 'rgb(' + baseColor.join(',') + ')';
-    // color = (decimalToHex(baseColor[0])) + (decimalToHex(baseColor[1])) + (decimalToHex(baseColor[2]));
-    // let colorRgb = color.convertToRGB();
-    return colorRgb;
-};
-
 decimalToHex = function (d, padding) {
     var hex;
     hex = Number(d).toString(16);
@@ -242,17 +225,59 @@ decimalToHex = function (d, padding) {
     return hex;
 };
 
-String.prototype.convertToRGB = function () {
-    var aRgbHex = this.match(/.{1,2}/g);
-    var aRgb = [
-        parseInt(aRgbHex[0], 16),
-        parseInt(aRgbHex[1], 16),
-        parseInt(aRgbHex[2], 16)
-    ];
-    aRgb.join(',');
-    let finRgb = 'rgb(' + aRgb + ')';
-    return finRgb;
+tag2color = function (t) {
+    var baseColor, c, color, j, len1, x;
+    c = 0;
+    t = t != null ? t : 'undefined';
+    baseColor = [0x66, 0x77, 0x66];
+    for (j = 0, len1 = t.length; j < len1; j++) {
+        x = t[j];
+        c = (c + 1217 * x.charCodeAt(0)) % 87911;
+    }
+    baseColor = [(baseColor[0] + (c >> 16) % 0xa0) % 0x100, (baseColor[1] + (c >> 8) % 0xb0) % 0x100, (baseColor[2] + c % 0xc0) % 0x100];
+    color = "#" + (decimalToHex(baseColor[0])) + (decimalToHex(baseColor[1])) + (decimalToHex(baseColor[2]));
+    return color;
 };
+
+
+// tag2color = function (t) {
+//     var baseColor, c, color, j, len1, x;
+//     c = 0;
+//     t = t != null ? t : 'undefined';
+//     baseColor = [0x66, 0x77, 0x66];
+//     for (j = 0, len1 = t.length; j < len1; j++) {
+//         x = t[j];
+//         c = (c + 1217 * x.charCodeAt(0)) % 87911;
+//     }
+//     baseColor = [(baseColor[0] + (c >> 16) % 0xa0) % 0x100, (baseColor[1] + (c >> 8) % 0xb0) % 0x100, (baseColor[2] + c % 0xc0) % 0x100];
+//     console.log(baseColor);
+//     let colorRgb = 'rgb(' + baseColor.join(',') + ')';
+//     // color = (decimalToHex(baseColor[0])) + (decimalToHex(baseColor[1])) + (decimalToHex(baseColor[2]));
+//     // let colorRgb = color.convertToRGB();
+//     return colorRgb;
+// };
+
+// decimalToHex = function (d, padding) {
+//     var hex;
+//     hex = Number(d).toString(16);
+//     padding = typeof padding === "undefined" || padding === null ? padding = 2 : padding;
+//     while (hex.length < padding) {
+//         hex = "0" + hex;
+//     }
+//     return hex;
+// };
+
+// String.prototype.convertToRGB = function () {
+//     var aRgbHex = this.match(/.{1,2}/g);
+//     var aRgb = [
+//         parseInt(aRgbHex[0], 16),
+//         parseInt(aRgbHex[1], 16),
+//         parseInt(aRgbHex[2], 16)
+//     ];
+//     aRgb.join(',');
+//     let finRgb = 'rgb(' + aRgb + ')';
+//     return finRgb;
+// };
 
 
 
@@ -321,8 +346,10 @@ function autocomplete(inp, arr) {
             c = document.createElement("span");
             $(c).addClass('autocomplete-tag create-tag-tag');
             $(b).addClass('create-tag-div');
-            let newTag = [val, tag2color(val)];
-            $(c).css('background-color', newTag[1]);
+            let color = tag2color(val);
+            console.log(color);
+            let newTag = [val, color];
+            $(c).css('background-color', color);
             /*make the matching letters bold:*/
             c.innerHTML = newTag[0];
             /*insert a input field that will hold the current array item's value:*/
@@ -350,7 +377,7 @@ function autocomplete(inp, arr) {
                 if (arr[i][0].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
                     /*create a DIV element for each matching element:*/
                     let curTag = arr[i];
-                    
+
                     if (curTag[0].toUpperCase() == val.toUpperCase()) {
                         isAnyExisting = true;
                     }

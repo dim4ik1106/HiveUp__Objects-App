@@ -18,6 +18,8 @@ var regexp = /\/\bmodel\/\b\w*\//gi;
 var modelId;
 var isHereAnswer = true;
 var modelTabId;
+var timer;
+
 
 // function checkingModelStatus() {
 //     if (extStatus) {
@@ -185,32 +187,10 @@ chrome.runtime.onMessage.addListener(
                 });
             });
         }
-        // if (request.message === "ext-status-question") {
-        //     if (extStatus) {
-        //         chrome.tabs.query({
-        //             currentWindow: true
-        //         }, function (tabs) {
-        //             for (let i = 0; i < tabs.length; i++) {
-        //                 var activeTab = tabs[i];
-        //                 chrome.tabs.sendMessage(activeTab.id, {
-        //                     "message": "start-extansion",
-        //                 });
-        //             }
-        //         });
-        //     } else {
-        //         chrome.tabs.query({
-        //             currentWindow: true
-        //         }, function (tabs) {
-        //             for (let i = 0; i < tabs.length; i++) {
-        //                 var activeTab = tabs[i];
-        //                 chrome.tabs.sendMessage(activeTab.id, {
-        //                     "message": "stop-extansion",
-        //                 });
-        //             }
-        //         });
-        //     }
-        // }
 
+        // chrome.tabs.onRemoved.addListener(function (tabid, removed) {
+        //     alert("tab closed")
+        // })
 
         if (request.message === "start-block-selection") {
             chrome.tabs.query({
@@ -338,24 +318,68 @@ chrome.runtime.onMessage.addListener(
                     extStatus = false;
 
                 } else if (tabs.length == 1) {
-                    // isHereAnswer = false;
-                    // modelTabId = tabs[0].id;
-                    // modelId = tabs[0].url.match(regexp).toString().replace('/model', '');
-
-                    // sendModelAndTagsRequest(tabs[0].id);
                     chrome.tabs.sendMessage(tabs[0].id, {
                         "message": "get_model_name_and_tags"
                     });
+                    modelTabId = tabs[0].id;
+                    modelId = tabs[0].url.match(regexp).toString().replace('/model', '');
+                    console.log('modelId = ' + modelId + ', and modelname listener was started');
+
+                    timer = setInterval(startTabListener, 500);
+
+
                 }
-                console.log(tabs);
             });
         }
-
-        if (request.message === "test") {
-            console.log(request.eventData);
-        }
-
     });
+
+function startTabListener() {
+    chrome.tabs.query({
+        url: 'http://do.hiveup.org/model/*'
+    }, function (tabs) {
+        if (tabs.length > 1 || tabs.length < 1) {
+            stopAndClearExt(tabs);
+            clearInterval(timer);
+        } else {
+            modelTabId = tabs[0].id;
+            let newModelId = tabs[0].url.match(regexp).toString().replace('/model', '');
+            if (modelId !== newModelId) {
+                stopAndClearExt(tabs);
+                clearInterval(timer);
+            }
+        }
+    });
+
+}
+
+function stopAndClearExt(tabArr) {
+    extStatus = false;
+    blockingStatus = false;
+    curSelctedTags = undefined;
+
+    for (let i = 0; i < tabArr.length; i++) {
+        chrome.tabs.sendMessage(tabArr[i], {
+            "message": "stop-extansion",
+        });
+        chrome.tabs.sendMessage(tabArr[i], {
+            "message": "stop-block-selection",
+        });
+        chrome.tabs.sendMessage(tabArr[i], {
+            "message": "cur-selected-tag",
+            tag: curSelctedTags
+        });
+    }
+    chrome.runtime.sendMessage({
+        "message": "stop-extansion",
+    });
+    chrome.runtime.sendMessage({
+        "message": "stop-block-selection",
+    });
+    chrome.runtime.sendMessage({
+        "message": "cur-selected-tag",
+        tag: curSelctedTags
+    });
+}
 
 
 
