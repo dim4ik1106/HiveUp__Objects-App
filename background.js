@@ -324,8 +324,8 @@ chrome.runtime.onMessage.addListener(
                     modelTabId = tabs[0].id;
                     modelId = tabs[0].url.match(regexp).toString().replace('/model', '');
                     console.log('modelId = ' + modelId + ', and modelname listener was started');
-
-                    timer = setInterval(startTabListener, 500);
+                    clearInterval(timer);
+                    timer = setInterval(startTabListener, 1000);
 
 
                 }
@@ -362,40 +362,33 @@ function stopAndClearExt(tabArr) {
     curSelctedTags = undefined;
 
     for (let i = 0; i < tabArr.length; i++) {
-        chrome.tabs.sendMessage(tabArr[i], {
+        try {
+            chrome.tabs.sendMessage(tabArr[i], {
+                "message": "stop-extansion",
+            });
+            chrome.tabs.sendMessage(tabArr[i], {
+                "message": "stop-block-selection",
+            });
+            chrome.tabs.sendMessage(tabArr[i], {
+                "message": "cur-selected-tag",
+                tag: curSelctedTags
+            });
+
+        } catch (error) {
+            console.log(error.name);
+            if (error == 'TypeError') {
+                i++;
+            }
+        }
+        chrome.runtime.sendMessage({
             "message": "stop-extansion",
         });
-        chrome.tabs.sendMessage(tabArr[i], {
+        chrome.runtime.sendMessage({
             "message": "stop-block-selection",
         });
-        chrome.tabs.sendMessage(tabArr[i], {
+        chrome.runtime.sendMessage({
             "message": "cur-selected-tag",
             tag: curSelctedTags
         });
     }
-    chrome.runtime.sendMessage({
-        "message": "stop-extansion",
-    });
-    chrome.runtime.sendMessage({
-        "message": "stop-block-selection",
-    });
-    chrome.runtime.sendMessage({
-        "message": "cur-selected-tag",
-        tag: curSelctedTags
-    });
 }
-
-
-
-// chrome.tabs.create({
-//     url: 'http://do.hiveup.org/model/m56/#view/etable'
-// }, function (tab) {
-//     chrome.tabs.onUpdated.addListener(function (tabId, info) {
-//         if (info.status === 'complete' && tabId == tab.id) {
-//             chrome.tabs.sendMessage(tab.id, {
-//                 "message": "add_object",
-//                 "object": request.object
-//             });
-//         }
-//     });
-// });

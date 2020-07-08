@@ -318,6 +318,7 @@ chrome.runtime.onMessage.addListener(
                             break;
                         }
                     }
+                    console.log(a.endCont.slice(0, 40));
                     for (let index = 0; index < endNodesList.length; index++) {
                         let curNode = endNodesList.item(index);
                         if (curNode.textContent.indexOf(a.endCont) > -1) {
