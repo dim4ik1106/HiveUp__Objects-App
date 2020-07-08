@@ -215,73 +215,13 @@ function sendNewTagInModel(tag) {
     console.log(tag);
 }
 
-decimalToHex = function (d, padding) {
-    var hex;
-    hex = Number(d).toString(16);
-    padding = typeof padding === "undefined" || padding === null ? padding = 2 : padding;
-    while (hex.length < padding) {
-        hex = "0" + hex;
-    }
-    return hex;
-};
+let colors = 'ffff99 ffccc9 ccccff ccffcc ffff33 ff9999 9999cc ccff99 ff9900 cc9999 00ccff 66cc00 cc9900 cc6699 0099cc 669900 996633 cc3366 099999 999900';
 
-tag2color = function (t) {
-    var baseColor, c, color, j, len1, x;
-    c = 0;
-    t = t != null ? t : 'undefined';
-    baseColor = [0x66, 0x77, 0x66];
-    for (j = 0, len1 = t.length; j < len1; j++) {
-        x = t[j];
-        c = (c + 1217 * x.charCodeAt(0)) % 87911;
-    }
-    baseColor = [(baseColor[0] + (c >> 16) % 0xa0) % 0x100, (baseColor[1] + (c >> 8) % 0xb0) % 0x100, (baseColor[2] + c % 0xc0) % 0x100];
-    color = "#" + (decimalToHex(baseColor[0])) + (decimalToHex(baseColor[1])) + (decimalToHex(baseColor[2]));
+function tag2color () {
+    let color = colors.split(' ');
+    color = '#' + color[Math.floor(Math.random() * color.length)];
     return color;
-};
-
-
-// tag2color = function (t) {
-//     var baseColor, c, color, j, len1, x;
-//     c = 0;
-//     t = t != null ? t : 'undefined';
-//     baseColor = [0x66, 0x77, 0x66];
-//     for (j = 0, len1 = t.length; j < len1; j++) {
-//         x = t[j];
-//         c = (c + 1217 * x.charCodeAt(0)) % 87911;
-//     }
-//     baseColor = [(baseColor[0] + (c >> 16) % 0xa0) % 0x100, (baseColor[1] + (c >> 8) % 0xb0) % 0x100, (baseColor[2] + c % 0xc0) % 0x100];
-//     console.log(baseColor);
-//     let colorRgb = 'rgb(' + baseColor.join(',') + ')';
-//     // color = (decimalToHex(baseColor[0])) + (decimalToHex(baseColor[1])) + (decimalToHex(baseColor[2]));
-//     // let colorRgb = color.convertToRGB();
-//     return colorRgb;
-// };
-
-// decimalToHex = function (d, padding) {
-//     var hex;
-//     hex = Number(d).toString(16);
-//     padding = typeof padding === "undefined" || padding === null ? padding = 2 : padding;
-//     while (hex.length < padding) {
-//         hex = "0" + hex;
-//     }
-//     return hex;
-// };
-
-// String.prototype.convertToRGB = function () {
-//     var aRgbHex = this.match(/.{1,2}/g);
-//     var aRgb = [
-//         parseInt(aRgbHex[0], 16),
-//         parseInt(aRgbHex[1], 16),
-//         parseInt(aRgbHex[2], 16)
-//     ];
-//     aRgb.join(',');
-//     let finRgb = 'rgb(' + aRgb + ')';
-//     return finRgb;
-// };
-
-
-
-
+}
 
 function autocomplete(inp, arr) {
     /*the autocomplete function takes two arguments,
