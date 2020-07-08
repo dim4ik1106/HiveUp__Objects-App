@@ -167,7 +167,7 @@ $(document).mouseup(function (e) {
     if (!$(objNameInput).is(e.target) &&
         !$(addObject).is(e.target) &&
         !$(objNameOk).is(e.target) &&
-        !$('full-added-object').is(e.target) &&
+        !$('.full-added-object').is(e.target) &&
         !$(deleteObject).is(e.target)) {
 
         $(contextMenu).hide();

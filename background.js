@@ -2,7 +2,7 @@
 
 // chrome.tabs.query({
 //     active: true,
-//     currentWindow: true
+//     currentWindow: false
 // }, function (tabs) {
 //     chrome.tabs.sendMessage(tabs[0].id, {
 //         greeting: "hello"
@@ -98,7 +98,7 @@ chrome.runtime.onMessage.addListener(
                 if (tabs.length == 0) {
                     chrome.tabs.query({
                         active: true,
-                        currentWindow: true
+                        // currentWindow: false
                     }, function (tabbbs) {
                         chrome.tabs.sendMessage(tabbbs[0].id, {
                             "message": "model-not-opened"
@@ -107,7 +107,7 @@ chrome.runtime.onMessage.addListener(
                 } else if (tabs.length > 1) {
                     chrome.tabs.query({
                         active: true,
-                        currentWindow: true
+                        // currentWindow: false
                     }, function (tabbbs) {
                         chrome.tabs.sendMessage(tabbbs[0].id, {
                             "message": "two-or-more-opened"
@@ -124,7 +124,7 @@ chrome.runtime.onMessage.addListener(
 
         if (request.message === "start-extansion") {
             chrome.tabs.query({
-                currentWindow: true
+                // currentWindow: false
             }, function (tabs) {
                 for (let i = 0; i < tabs.length; i++) {
                     var activeTab = tabs[i];
@@ -137,7 +137,7 @@ chrome.runtime.onMessage.addListener(
         }
         if (request.message === "stop-extansion") {
             chrome.tabs.query({
-                currentWindow: true
+                // currentWindow: false
             }, function (tabs) {
                 for (let i = 0; i < tabs.length; i++) {
                     var activeTab = tabs[i];
@@ -151,7 +151,7 @@ chrome.runtime.onMessage.addListener(
 
         if (request.message === "ext-status-question") {
             chrome.tabs.query({
-                currentWindow: true
+                // currentWindow: false
             }, function (tabs) {
                 for (let i = 0; i < tabs.length; i++) {
                     var activeTab = tabs[i];
@@ -194,7 +194,7 @@ chrome.runtime.onMessage.addListener(
 
         if (request.message === "start-block-selection") {
             chrome.tabs.query({
-                currentWindow: true
+                // currentWindow: false
             }, function (tabs) {
                 for (let i = 0; i < tabs.length; i++) {
                     var activeTab = tabs[i];
@@ -207,7 +207,7 @@ chrome.runtime.onMessage.addListener(
         }
         if (request.message === "stop-block-selection") {
             chrome.tabs.query({
-                currentWindow: true
+                // currentWindow: false
             }, function (tabs) {
                 for (let i = 0; i < tabs.length; i++) {
                     var activeTab = tabs[i];
@@ -221,7 +221,7 @@ chrome.runtime.onMessage.addListener(
         if (request.message === "blocking-status-question") {
             if (blockingStatus) {
                 chrome.tabs.query({
-                    currentWindow: true
+                    // currentWindow: false
                 }, function (tabs) {
                     for (let i = 0; i < tabs.length; i++) {
                         var activeTab = tabs[i];
@@ -232,7 +232,7 @@ chrome.runtime.onMessage.addListener(
                 });
             } else {
                 chrome.tabs.query({
-                    currentWindow: true
+                    // currentWindow: false
                 }, function (tabs) {
                     for (let i = 0; i < tabs.length; i++) {
                         var activeTab = tabs[i];
@@ -247,7 +247,7 @@ chrome.runtime.onMessage.addListener(
         if (request.message === "cur-selected-tag") {
             curSelctedTags = request.tag;
             chrome.tabs.query({
-                currentWindow: true
+                // currentWindow: false
             }, function (tabs) {
                 for (let i = 0; i < tabs.length; i++) {
                     var activeTab = tabs[i];
@@ -260,7 +260,7 @@ chrome.runtime.onMessage.addListener(
         }
         if (request.message === "selected-tags-question") {
             chrome.tabs.query({
-                currentWindow: true
+                // currentWindow: false
             }, function (tabs) {
                 for (let i = 0; i < tabs.length; i++) {
                     var activeTab = tabs[i];
@@ -288,7 +288,7 @@ chrome.runtime.onMessage.addListener(
                         tabsCount: 0
                     });
                     chrome.tabs.query({
-                        currentWindow: true
+                        // currentWindow: false
                     }, function (tabs) {
                         for (let i = 0; i < tabs.length; i++) {
                             var activeTab = tabs[i];
@@ -306,7 +306,7 @@ chrome.runtime.onMessage.addListener(
                         tabsCount: tabs.length
                     });
                     chrome.tabs.query({
-                        currentWindow: true
+                        // currentWindow: false
                     }, function (tabs) {
                         for (let i = 0; i < tabs.length; i++) {
                             var activeTab = tabs[i];
@@ -338,13 +338,17 @@ function startTabListener() {
         url: 'http://do.hiveup.org/model/*'
     }, function (tabs) {
         if (tabs.length > 1 || tabs.length < 1) {
-            stopAndClearExt(tabs);
+            chrome.tabs.query({}, function (allTabs) {
+                stopAndClearExt(allTabs);
+            });
             clearInterval(timer);
         } else {
             modelTabId = tabs[0].id;
             let newModelId = tabs[0].url.match(regexp).toString().replace('/model', '');
             if (modelId !== newModelId) {
-                stopAndClearExt(tabs);
+                chrome.tabs.query({}, function (allTabs) {
+                    stopAndClearExt(allTabs);
+                });
                 clearInterval(timer);
             }
         }
