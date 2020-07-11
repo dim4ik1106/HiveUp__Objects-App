@@ -1,3 +1,4 @@
+
 // background.js 
 
 // chrome.tabs.query({
@@ -64,6 +65,8 @@ chrome.runtime.onMessage.addListener(
                     chrome.tabs.sendMessage(tabs[0].id, {
                         "message": "highlight_object",
                         "object": request.object
+                    }, function (callback) {
+                        void chrome.runtime.lastError;
                     });
                     chrome.tabs.get(tabs[0].id, function (tab) {
                         chrome.tabs.highlight({
@@ -80,6 +83,8 @@ chrome.runtime.onMessage.addListener(
                                 chrome.tabs.sendMessage(tab.id, {
                                     "message": "highlight_object",
                                     "object": request.object
+                                }, function (callback) {
+                                    void chrome.runtime.lastError;
                                 });
                                 console.log("highlight_command_from_hiveup WAS RECIVED IN BG AND SEND TO THE NEW PAGE");
                                 console.log(request.object);
@@ -102,6 +107,8 @@ chrome.runtime.onMessage.addListener(
                     }, function (tabbbs) {
                         chrome.tabs.sendMessage(tabbbs[0].id, {
                             "message": "model-not-opened"
+                        }, function (callback) {
+                            void chrome.runtime.lastError;
                         });
                     });
                 } else if (tabs.length > 1) {
@@ -111,12 +118,16 @@ chrome.runtime.onMessage.addListener(
                     }, function (tabbbs) {
                         chrome.tabs.sendMessage(tabbbs[0].id, {
                             "message": "two-or-more-opened"
+                        }, function (callback) {
+                            void chrome.runtime.lastError;
                         });
                     });
                 } else {
                     chrome.tabs.sendMessage(tabs[0].id, {
                         "message": "add_object",
                         "object": request.object
+                    }, function (callback) {
+                        void chrome.runtime.lastError;
                     });
                 }
             });
@@ -130,6 +141,8 @@ chrome.runtime.onMessage.addListener(
                     var activeTab = tabs[i];
                     chrome.tabs.sendMessage(activeTab.id, {
                         "message": "start-extansion",
+                    }, function (callback) {
+                        void chrome.runtime.lastError;
                     });
                 }
             });
@@ -143,6 +156,8 @@ chrome.runtime.onMessage.addListener(
                     var activeTab = tabs[i];
                     chrome.tabs.sendMessage(activeTab.id, {
                         "message": "stop-extansion",
+                    }, function (callback) {
+                        void chrome.runtime.lastError;
                     });
                 }
             });
@@ -158,33 +173,65 @@ chrome.runtime.onMessage.addListener(
                     if (extStatus) {
                         chrome.tabs.sendMessage(activeTab.id, {
                             "message": "start-extansion",
+                        }, function (callback) {
+                            void chrome.runtime.lastError;
+                        });
+                        chrome.runtime.sendMessage({
+                            "message": "start-extansion",
+                        }, function (callback) {
+                            void chrome.runtime.lastError;
                         });
                     } else {
                         chrome.tabs.sendMessage(activeTab.id, {
                             "message": "stop-extansion",
+                        }, function (callback) {
+                            void chrome.runtime.lastError;
+                        });
+                        chrome.runtime.sendMessage({
+                            "message": "stop-extansion",
+                        }, function (callback) {
+                            void chrome.runtime.lastError;
                         });
                     }
 
                     if (blockingStatus) {
                         chrome.tabs.sendMessage(activeTab.id, {
                             "message": "start-block-selection",
+                        }, function (callback) {
+                            void chrome.runtime.lastError;
+                        });
+                        chrome.runtime.sendMessage({
+                            "message": "start-block-selection",
+                        }, function (callback) {
+                            void chrome.runtime.lastError;
                         });
                     } else {
                         chrome.tabs.sendMessage(activeTab.id, {
                             "message": "stop-block-selection",
+                        }, function (callback) {
+                            void chrome.runtime.lastError;
+                        });
+                        chrome.runtime.sendMessage({
+                            "message": "stop-block-selection",
+                        }, function (callback) {
+                            void chrome.runtime.lastError;
                         });
                     }
 
                     chrome.tabs.sendMessage(activeTab.id, {
                         "message": "cur-selected-tag",
                         "tag": curSelctedTags
-                    });
+                    }, function (callback) {
+                            void chrome.runtime.lastError;
+                        });
 
                 }
                 chrome.runtime.sendMessage({
                     "message": "get-cur-selected-tag-answer",
                     "curTag": curSelctedTags
-                });
+                }, function (callback) {
+                            void chrome.runtime.lastError;
+                        });
             });
         }
 
@@ -200,6 +247,8 @@ chrome.runtime.onMessage.addListener(
                     var activeTab = tabs[i];
                     chrome.tabs.sendMessage(activeTab.id, {
                         "message": "start-block-selection",
+                    }, function (callback) {
+                        void chrome.runtime.lastError;
                     });
                 }
             });
@@ -213,6 +262,8 @@ chrome.runtime.onMessage.addListener(
                     var activeTab = tabs[i];
                     chrome.tabs.sendMessage(activeTab.id, {
                         "message": "stop-block-selection",
+                    }, function (callback) {
+                        void chrome.runtime.lastError;
                     });
                 }
             });
@@ -227,6 +278,8 @@ chrome.runtime.onMessage.addListener(
                         var activeTab = tabs[i];
                         chrome.tabs.sendMessage(activeTab.id, {
                             "message": "start-block-selection",
+                        }, function (callback) {
+                            void chrome.runtime.lastError;
                         });
                     }
                 });
@@ -238,6 +291,8 @@ chrome.runtime.onMessage.addListener(
                         var activeTab = tabs[i];
                         chrome.tabs.sendMessage(activeTab.id, {
                             "message": "stop-block-selection",
+                        }, function (callback) {
+                            void chrome.runtime.lastError;
                         });
                     }
                 });
@@ -254,6 +309,8 @@ chrome.runtime.onMessage.addListener(
                     chrome.tabs.sendMessage(activeTab.id, {
                         "message": "cur-selected-tag",
                         tag: curSelctedTags
+                    }, function (callback) {
+                        void chrome.runtime.lastError;
                     });
                 }
             });
@@ -267,6 +324,8 @@ chrome.runtime.onMessage.addListener(
                     chrome.tabs.sendMessage(activeTab.id, {
                         "message": "cur-selected-tag",
                         tag: curSelctedTags
+                    }, function (callback) {
+                        void chrome.runtime.lastError;
                     });
                 }
             });
@@ -274,6 +333,22 @@ chrome.runtime.onMessage.addListener(
 
         if (request.message === "stop-request-sending") {
             isHereAnswer = true;
+        }
+
+        if (request.message === "error_object_exists-to-bg") {
+            chrome.tabs.query({
+                active: true,
+                currentWindow: true
+            }, function (tab) {
+                chrome.tabs.sendMessage(tab[0].id, {
+                    "message": "object-alredy-exist",
+                    "object": request.object,
+                    "modelName": request.modelName
+                }, function (callback) {
+                    void chrome.runtime.lastError;
+                });
+            });
+            console.log('existing-object sended from bg');
         }
 
 
@@ -294,6 +369,8 @@ chrome.runtime.onMessage.addListener(
                             var activeTab = tabs[i];
                             chrome.tabs.sendMessage(activeTab.id, {
                                 "message": "stop-extansion",
+                            }, function (callback) {
+                                void chrome.runtime.lastError;
                             });
                         }
                     });
@@ -312,6 +389,8 @@ chrome.runtime.onMessage.addListener(
                             var activeTab = tabs[i];
                             chrome.tabs.sendMessage(activeTab.id, {
                                 "message": "stop-extansion",
+                            }, function (callback) {
+                                void chrome.runtime.lastError;
                             });
                         }
                     });
@@ -320,6 +399,8 @@ chrome.runtime.onMessage.addListener(
                 } else if (tabs.length == 1) {
                     chrome.tabs.sendMessage(tabs[0].id, {
                         "message": "get_model_name_and_tags"
+                    }, function (callback) {
+                        void chrome.runtime.lastError;
                     });
                     modelTabId = tabs[0].id;
                     modelId = tabs[0].url.match(regexp).toString().replace('/model', '');
@@ -365,13 +446,19 @@ function stopAndClearExt(tabArr) {
         try {
             chrome.tabs.sendMessage(tabArr[i], {
                 "message": "stop-extansion",
+            }, function (callback) {
+                void chrome.runtime.lastError;
             });
             chrome.tabs.sendMessage(tabArr[i], {
                 "message": "stop-block-selection",
+            }, function (callback) {
+                void chrome.runtime.lastError;
             });
             chrome.tabs.sendMessage(tabArr[i], {
                 "message": "cur-selected-tag",
                 tag: curSelctedTags
+            }, function (callback) {
+                void chrome.runtime.lastError;
             });
 
         } catch (error) {
@@ -392,3 +479,4 @@ function stopAndClearExt(tabArr) {
         });
     }
 }
+

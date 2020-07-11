@@ -11,6 +11,19 @@ jQuery(document).ready(function ($) {
     checkBlockingStateOnCurPage();
     fillSelectedTagsList(selectedTagsArr);
 
+    // $('.existing-object').click(function (e) {
+    //     e.preventDefault();
+    //     chrome.tabs.query({
+    //         active: true,
+    //         currentWindow: true
+    //     }, function (tabs) {
+    //         var activeTab = tabs[0];
+    //         chrome.tabs.sendMessage(activeTab.id, {
+    //             "message": "existing-object"
+    //         });
+    //     });
+    // });
+
     $(statusOnCheckbox).change(function (e) {
         let onOrOff;
         if ($(this).attr('checked')) {
@@ -100,7 +113,7 @@ jQuery(document).ready(function ($) {
 
                 } else {
                     if (request.tabsCount == 0) {
-                        $('.popup-body').prepend('<a href="http://do.hiveup.org/done/" target="_blank" rel="HiveUp" class="popup-button rounded">Open projects</a>');
+                        $('.popup-body').prepend('<a href="http://do.hiveup.org/done/" target="_blank" rel="HiveUp" class="popup-button rounded unique-class">Open projects</a>');
                         $('.popup-body').prepend('<p class="extansion-message">Please open your model on HiveUp to use extension.</p>');
                     } else if (request.tabsCount > 1) {
                         $('.popup-body').prepend('<p class="extansion-message">Please open only one model on HiveUp to use extension.</p>');

@@ -114,19 +114,9 @@ function unwrapSelection(elem) {
     $(elem).contents().unwrap();
 }
 
-function isCurSelectionAlredyUsed() {
-    if (typeof curWrappedContent != 'undefined') {
-        if (selection != curWrappedContent.selectionContents) {
-            console.log('ITS TRUE');
-            return true;
-        } else return false;
-    } else return true;
-}
-
 var selectdObjSring,
     objLocation = location.href,
     curWrappedContent,
-    curSelectedContent,
     curSelectedContent,
     curSelectedRange;
 
@@ -155,6 +145,7 @@ $(document).ready(function () {
     chrome.runtime.sendMessage({
         "message": "ext-status-question"
     });
+    console.log('ext-status-question WAS SENDED');
 });
 
 
@@ -162,7 +153,7 @@ $(document).ready(function () {
 $(document).mouseup(function (e) {
     if (!listenerState) return;
     selection = window.getSelection();
-    window.objLocation = location.href;
+    objLocation = location.href;
 
     if (!$(objNameInput).is(e.target) &&
         !$(addObject).is(e.target) &&
@@ -185,11 +176,12 @@ $(document).mouseup(function (e) {
                 left: defPosition(e).x + "px",
                 display: "block"
             });
-            window.curSelectedContent = selection.getRangeAt(0);
+            curSelectedContent = selection.getRangeAt(0);
             if (blockSelectionState) {
-                window.curWrappedContent = wrapSelection(true);
+                curWrappedContent = wrapSelection(true);
             } else {
-                window.curWrappedContent = wrapSelection(false);
+                curWrappedContent = wrapSelection(false);
+                console.log(curWrappedContent);
             }
 
         }
@@ -239,11 +231,19 @@ chrome.runtime.onMessage.addListener(
             });
             console.log('answered blocking ' + blockSelectionState);
 
-
-        } else if (request.message === "remove_objects_clicked") {
-            $('.selected-content').each(function () {
-                unwrapSelection($(this));
-            });
+        } else if (request.message === "object-alredy-exist") {
+                // unwrapSelection(curWrappedContent.span);
+                let newName = prompt('Object with name "' + request.object.name + '" alredy exist in your "' + request.modelName + '" model. Please Choose another name:', request.object.name);
+                console.log(newName);
+                if (newName !== null && (newName.length > 0)) {
+                    selectedObject.name = newName;
+                    $(objNameInput).val(newName);
+                    $(objNameOk).mouseup();
+                    $(curWrappedContent.span).attr('data-object-name', newName);
+                } else {
+                    alert('You did not specify an object name. It will not be added to your model.');
+                    unwrapSelection(curWrappedContent.span);
+                }
 
         } else if (request.message === "model-not-opened") {
             alert('No one project is opened. Open your project in another tab and repeat the procedure of selecting an object.');
@@ -318,7 +318,7 @@ chrome.runtime.onMessage.addListener(
                             break;
                         }
                     }
-                    console.log(a.endCont.slice(0, 40));
+                    // console.log(a.endCont.slice(0, 40));
                     for (let index = 0; index < endNodesList.length; index++) {
                         let curNode = endNodesList.item(index);
                         if (curNode.textContent.indexOf(a.endCont) > -1) {
@@ -388,18 +388,19 @@ function wrapKnownSelection(p) {
 
 
 
+var selectedObject = {};
 
 $(objNameOk).mouseup(function (e) {
     // e.preventDefault();
     e.stopPropagation();
-    var selectedObject = {};
-    if ($(objNameInput).val().length < 1) {
+    if ($(objNameInput).val() == null || ($(objNameInput).val().length < 1)) {
         $(objNameInput).addClass("invalid-value");
         setTimeout(function () {
             $(objNameInput).removeClass("invalid-value");
         }, 600);
         return false;
     }
+    console.log('button ok pressed');
     $(objectNameContainer).hide();
     $(curWrappedContent.span).addClass('full-added-object');
 
@@ -430,6 +431,8 @@ $(objNameOk).mouseup(function (e) {
         $(nameMenu).hide();
     });
 
+    console.log(selectedObject);
+
     selectedObject.text = $(curWrappedContent.span).text().replace(/\s+/g, " ");
     selectedObject.tag = curSelctedTag;
     selectedObject.range = curWrappedContent.newRange;
@@ -441,20 +444,21 @@ $(objNameOk).mouseup(function (e) {
         "object": selectedObject
     });
 
-    console.log(selectedObject);
+    
 });
 
 $(addObject).mouseup(function (e) {
     // e.preventDefault();
     e.stopPropagation();
 
+    // $(objectNameContainer).show();
     contextMenu.hide();
-    $(curWrappedContent.span).addClass('added-object');
     objectNameContainer.css({
-        top: defPosition(e).y + "px",
-        left: defPosition(e).x + "px",
-        display: "block"
+        'top': defPosition(e).y + "px",
+        'left': defPosition(e).x + "px",
+        'display': "block"
     });
+    $(curWrappedContent.span).addClass('added-object');
     document.getElementById('obj-name-input').focus();
 });
 
@@ -479,48 +483,14 @@ window.addEventListener("message", function (request) {
             "message": "stop-request-sending",
         });
     }
+
+    if (request.data.message && (request.data.message == "error_object_exists")) {
+        chrome.runtime.sendMessage({
+            "message": "error_object_exists-to-bg",
+            "object": request.data.obj,
+            "modelName": request.data.modelName
+        });
+        console.log(request.data);
+    }
 });
 
-
-
-
-
-
-
-
-
-///////// MAIN BACKUP
-
-// $(document).mouseup(function (e) {
-//     selection = window.getSelection();
-//     window.objLocation = location.href;
-
-//     if (!$(objNameInput).is(e.target) &&
-//         !$(addObject).is(e.target) &&
-//         !$(objNameOk).is(e.target) &&
-//         !$('full-added-object').is(e.target) &&
-//         !$(deleteObject).is(e.target)) {
-
-//         $(contextMenu).hide();
-//         $(deleteMenu).hide();
-//         $(objectNameContainer).hide();
-//         $('span.selected-content').each(function () {
-//             if (!$(this).hasClass('full-added-object')) {
-//                 unwrapSelection(this);
-//             }
-//         });
-
-//         if (selection.toString() != '') {
-//             contextMenu.css({
-//                 top: defPosition(e).y + "px",
-//                 left: defPosition(e).x + "px",
-//                 display: "block"
-//             });
-//             window.curSelectedContent = selection.getRangeAt(0);
-//             window.curWrappedContent = wrapSelection();
-
-//         }
-//     }
-// });
-
-// BATimesClicked++;
