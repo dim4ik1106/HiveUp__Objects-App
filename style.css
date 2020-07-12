@@ -16,6 +16,10 @@ body.popup-body {
     font-family: "Arial", sans-serif;
 }
 
+body.popup-body.ext-big-popup {
+    height: 245px;
+}
+
 .popup-body a,
 .popup-body a:focus,
 .popup-body a:active,
@@ -420,6 +424,8 @@ input[type="text"]:focus {
 a.popup-button.rounded.unique-class {
     display: block;
     margin: 0 auto;
+    width: -webkit-fit-content;
+    width: -moz-fit-content;
     width: fit-content;
 }
 
