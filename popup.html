@@ -3,8 +3,9 @@
 
 <head>
     <meta http-equiv="content-type" charset="utf-8">
+    <meta http-equiv="Content-Security-Policy" content="img-src 'self' data:; default-src 'self' http://XX.XX.XX.XX:8084/mypp/">
     <meta http-equiv="Content-Security-Policy"
-        content="default-src *; style-src 'self' http://* 'unsafe-inline'; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'" />
+        content="default-src *; style-src 'self' http://* 'unsafe-inline'; img-src 'self' data:; script-src 'self' http://* 'unsafe-inline' 'unsafe-eval'" />
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -41,21 +42,27 @@
             </div>
         </div>
 
-        <!-- <button class="existing-object"></button> -->
-
-        <!-- <select name="Tag" id="tags-for-objects" class="popup-select">
-            <option value="null" disabled selected hidden>Select a tag for added objects</option>
-            <option value="none">Without tag</option>
-        </select> -->
-
-        <div class="selected-tags-list">
+        <div class="option show-selections">
+            <p class="extansion-message">
+                Show all selected on page objects
+            </p>
+            <div class="radio-cont">
+                <input type="checkbox" checked='true' class="hidden-checkbox" name="show-selections-status"
+                    id="show-selections-status">
+                <label for="show-selections-status">
+                    <div class="checkbox-bar">
+                        <div class="checkbox-dot"></div>
+                    </div>
+                </label>
+            </div>
         </div>
+
+        <div class="selected-tags-list"></div>
 
         <form class="object-name tag-select" autocomplete="off">
             <div class="autocomplete">
                 <input id="tagsInput" type="text" name="myCountry" placeholder="Select tag">
             </div>
-            <!-- <button class="tag-select-ok" id="tag-select-ok">Ok</button> -->
         </form>
 
 

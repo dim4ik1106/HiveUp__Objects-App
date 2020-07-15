@@ -75,6 +75,10 @@ function wrapSelection(is_blocking) {
     var range = window.getSelection().getRangeAt(0);
     console.log(range);
 
+
+    let startHTML = allRange.anchorNode.parentNode.outerHTML;
+    let endHTML = allRange.focusNode.parentNode.outerHTML;
+
     var newRange = {};
 
     newRange.startCont = range.startContainer.textContent;
@@ -105,13 +109,17 @@ function wrapSelection(is_blocking) {
         newRange,
         span,
         selectionContents,
-        range
+        range,
+        startHTML,
+        endHTML
     };
 }
 
 function unwrapSelection(elem) {
+    let elemParent = $(elem).parents()[0];
     $(elem).children().removeClass('selected-content');
     $(elem).contents().unwrap();
+    elemParent.normalize();
 }
 
 var selectdObjSring,
@@ -126,7 +134,8 @@ $('body').append(deleteMenu);
 $('body').append(nameMenu);
 
 var listenerState = false;
-var blockSelectionState = true;
+var blockSelectionState = false;
+var showSelectionsState = false;
 var curSelctedTag;
 
 document.onkeyup = function (e) {
@@ -145,13 +154,22 @@ $(document).ready(function () {
     chrome.runtime.sendMessage({
         "message": "ext-status-question"
     });
-    console.log('ext-status-question WAS SENDED');
+    setTimeout(() => {
+        if (showSelectionsState) {
+            chrome.runtime.sendMessage({
+                "message": "give-objects-for-selection"
+            }, function (response) {
+                wrapSelections(response.objects);
+            });
+            console.log("give objects for selection sended");
+        }
+    }, 200);
 });
 
 
 
 $(document).mouseup(function (e) {
-    if (!listenerState) return;
+
     selection = window.getSelection();
     objLocation = location.href;
 
@@ -169,6 +187,8 @@ $(document).mouseup(function (e) {
                 unwrapSelection(this);
             }
         });
+
+        if (!listenerState) return;
 
         if (selection.toString() != '') {
             contextMenu.css({
@@ -203,47 +223,56 @@ chrome.runtime.onMessage.addListener(
                 "message": "extansion-state-answer",
                 state: listenerState
             });
-            console.log('answered ' + listenerState);
 
         } else if (request.message === "start-block-selection") {
-            console.log('block started');
             blockSelectionState = true;
-
         } else if (request.message === "stop-block-selection") {
-            console.log('block stopped');
             blockSelectionState = false;
-
-        } else if (request.message === "cur-selected-tag") {
-            curSelctedTag = request.tag;
-            console.log('Now CURRENT TAG IS ' + curSelctedTag);
-
-        } else if (request.message === "get-cur-selected-tag") {
-            chrome.runtime.sendMessage({
-                "message": "get-cur-selected-tag-answer",
-                curTag: curSelctedTag
-            });
-            console.log('answered TAGGGGGGG ' + curSelctedTag);
-
         } else if (request.message === "block-selection-state") {
             chrome.runtime.sendMessage({
                 "message": "block-selection-state-answer",
                 state: blockSelectionState
             });
-            console.log('answered blocking ' + blockSelectionState);
+
+
+        } else if (request.message === "cur-selected-tag") {
+            curSelctedTag = request.tag;
+        } else if (request.message === "get-cur-selected-tag") {
+            chrome.runtime.sendMessage({
+                "message": "get-cur-selected-tag-answer",
+                curTag: curSelctedTag
+            });
+
+
+        } else if (request.message === "start-show-selections") {
+            showSelectionsState = true;
+
+        } else if (request.message === "stop-show-selections") {
+            showSelectionsState = false;
+            $('span.selected-content').each(function () {
+                // if (!$(this).hasClass('full-added-object')) {
+                unwrapSelection(this);
+                // }
+            });
+
+        } else if (request.message === "show-selections-state") {
+            chrome.runtime.sendMessage({
+                "message": "show-selections-state-answer",
+                state: showSelectionsState
+            });
 
         } else if (request.message === "object-alredy-exist") {
-                // unwrapSelection(curWrappedContent.span);
-                let newName = prompt('Object with name "' + request.object.name + '" alredy exist in your "' + request.modelName + '" model. Please Choose another name:', request.object.name);
-                console.log(newName);
-                if (newName !== null && (newName.length > 0)) {
-                    selectedObject.name = newName;
-                    $(objNameInput).val(newName);
-                    $(objNameOk).mouseup();
-                    $(curWrappedContent.span).attr('data-object-name', newName);
-                } else {
-                    alert('You did not specify an object name. It will not be added to your model.');
-                    unwrapSelection(curWrappedContent.span);
-                }
+            let newName = prompt('Object with name "' + request.object.name + '" alredy exist in your "' + request.modelName + '" model. Please Choose another name:', request.object.name);
+            console.log(newName);
+            if (newName !== null && (newName.length > 0)) {
+                selectedObject.name = newName;
+                $(objNameInput).val(newName);
+                $(objNameOk).mouseup();
+                $(curWrappedContent.span).attr('data-object-name', newName);
+            } else {
+                alert('You did not specify an object name. It will not be added to your model.');
+                unwrapSelection(curWrappedContent.span);
+            }
 
         } else if (request.message === "model-not-opened") {
             alert('No one project is opened. Open your project in another tab and repeat the procedure of selecting an object.');
@@ -265,8 +294,11 @@ chrome.runtime.onMessage.addListener(
             window.postMessage({
                 "message": "get_model_name_and_tags"
             });
-            console.log("Запрос на модель отправлен на страницу");
-            console.log(request.message);
+
+        } else if (request.message === "get-objects-for-selection") {
+            window.postMessage({
+                "message": "get-ext-objects-request"
+            });
 
         } else if (request.message === "add_object") {
             window.postMessage({
@@ -284,55 +316,107 @@ chrome.runtime.onMessage.addListener(
             console.log(request.tag);
 
         } else if (request.message === "highlight_object") {
-            console.log("HIGHLIGHTCOMMAND FROM BG RECIDVED");
-            var a = request.object.range;
-            console.log(request.object);
-            var is_blocking = request.object.range.is_blocking;
+            if ($('[data-object-name="' + request.object.name + '"]').length > 0) {
+                $('html, body').animate({
+                    scrollTop: $('[data-object-name="' + request.object.name + '"]').offset().top - 100
+                }, 1000);
+            } else {
+                let pseudoArr = [request.object];
+                wrapSelections(pseudoArr, true);
+            }
+
+        } else if (request.message === "objects-for-selection") {
+            if (showSelectionsState) {
+                wrapSelections(request.objects);
+            }
+        }
+    });
+
+function wrapKnownSelection(p) {
+    wrapSelection();
+}
+
+function wrapSelections(objects, scrollTo) {
+    for (let y = 0; y < objects.length; y++) {
+        if (window.location.href == objects[y].location) {
+            console.log('ЛОКАЦИЯ СОВПАЛА');
+
+            let a = objects[y].range;
+            let is_blocking = objects[y].range.is_blocking;
             window.getSelection().removeAllRanges();
-            var rng = new Range();
-            var count = 1;
+            let rng = new Range();
+            let count = 1;
 
             addSelectionFromApp();
 
             function addSelectionFromApp() {
-                var newStartCont = $(a.startContTag + ":contains('" + a.startCont.substring(0, 50) + "')");
-                var newEndCont = $(a.endContTag + ":contains('" + a.endCont.substring(0, 50) + "')");
+                let newStartCont = $(a.startContTag + ":contains('" + a.startCont.substring(0, 40) + "')");
+                let newEndCont = $(a.endContTag + ":contains('" + a.endCont.substring(0, 40) + "')");
                 newStartCont = newStartCont[newStartCont.length - 1];
                 newEndCont = newEndCont[newEndCont.length - 1];
-                console.log(newStartCont);
-                console.log(newEndCont);
+                let o = 1;
 
-                if (typeof newStartCont != 'undefined') {
-                    console.log(newStartCont);
-                    console.log('all right!');
-                    var finStartCont,
-                        finEndCont,
-                        startNodesList = newStartCont.childNodes,
-                        endNodesList = newEndCont.childNodes;
 
-                    for (let index = 0; index < startNodesList.length; index++) {
-                        let curNode = startNodesList.item(index);
-                        if (curNode.textContent.indexOf(a.startCont) > -1) {
-                            console.log(curNode);
-                            finStartCont = curNode;
-                            break;
+                if (typeof newStartCont != 'undefined' && typeof newEndCont != 'undefined') {
+                    let finStartCont,
+                        finEndCont;
+
+                    tryToFind();
+
+                    function tryToFind() {
+                        console.log(newStartCont);
+                        console.log(newEndCont);
+                        let startNodesList = newStartCont.childNodes,
+                            endNodesList = newEndCont.childNodes;
+                        try {
+                            startNodesList = newStartCont.childNodes,
+                                endNodesList = newEndCont.childNodes;
+                        } catch (error) {
+                            console.log(error);
                         }
-                    }
-                    // console.log(a.endCont.slice(0, 40));
-                    for (let index = 0; index < endNodesList.length; index++) {
-                        let curNode = endNodesList.item(index);
-                        if (curNode.textContent.indexOf(a.endCont) > -1) {
-                            console.log(curNode);
-                            finEndCont = curNode;
-                            break;
+
+                        for (let index = 0; index < startNodesList.length; index++) {
+                            let curNode = startNodesList.item(index);
+                            if (curNode.textContent.indexOf(a.startCont) > -1) {
+                                finStartCont = curNode;
+                            }
                         }
+                        for (let index = 0; index < endNodesList.length; index++) {
+                            let curNode = endNodesList.item(index);
+                            if (curNode.textContent.indexOf(a.endCont) > -1) {
+                                finEndCont = curNode;
+                            }
+                        }
+
+                        if (!finStartCont) {
+                            o++;
+                            newStartCont = $(a.startContTag + ":contains('" + a.startCont.substring(0, 40) + "')");
+                            newStartCont = newStartCont[newStartCont.length - o];
+                            tryToFind();
+                        }
+
+                        if (!finEndCont) {
+                            o++;
+                            newEndCont = $(a.endContTag + ":contains('" + a.endCont.substring(0, 40) + "')");
+                            newEndCont = newEndCont[newEndCont.length - o];
+                            tryToFind();
+                        }
+
+                        // console.log(finEndCont);
+                        // console.log(finStartCont);
                     }
 
+                    // console.log(finStartCont);
+                    // console.log(finEndCont);
+                    try {
+                        rng.setStart(finStartCont, a.startOffset);
+                        rng.setEnd(finEndCont, a.endOffset);
+                    } catch (error) {
+                        console.log(error);
+                    }
 
-                    rng.setStart(finStartCont, a.startOffset);
-                    rng.setEnd(finEndCont, a.endOffset);
                     window.getSelection().addRange(rng);
-                    var reverseAddedSelection;
+                    let reverseAddedSelection;
                     if (is_blocking) {
                         reverseAddedSelection = wrapSelection(true);
                     } else {
@@ -349,7 +433,7 @@ chrome.runtime.onMessage.addListener(
                             display: "block"
                         });
                     });
-                    $(reverseAddedSelection.span).attr('data-object-name', request.object.name);
+                    $(reverseAddedSelection.span).attr('data-object-name', objects[y].name);
                     $(reverseAddedSelection.span).mouseover(function (e) {
                         $(nameObject).text($(this).attr('data-object-name'));
                         nameMenu.css({
@@ -362,9 +446,11 @@ chrome.runtime.onMessage.addListener(
                         $(nameMenu).hide();
                     });
 
-                    $('html, body').animate({
-                        scrollTop: $(reverseAddedSelection.span).offset().top - 100
-                    }, 1000);
+                    if (scrollTo) {
+                        $('html, body').animate({
+                            scrollTop: $(reverseAddedSelection.span).offset().top - 100
+                        }, 1000);
+                    }
 
                     window.getSelection().removeAllRanges();
 
@@ -379,10 +465,7 @@ chrome.runtime.onMessage.addListener(
                 // }
             }
         }
-    });
-
-function wrapKnownSelection(p) {
-    wrapSelection();
+    }
 }
 
 
@@ -436,6 +519,8 @@ $(objNameOk).mouseup(function (e) {
     selectedObject.text = $(curWrappedContent.span).text().replace(/\s+/g, " ");
     selectedObject.tag = curSelctedTag;
     selectedObject.range = curWrappedContent.newRange;
+    selectedObject.startHTML = curWrappedContent.startHTML;
+    selectedObject.endHTML = curWrappedContent.endHTML;
     selectedObject.location = objLocation;
     $(objNameInput).val('');
 
@@ -444,7 +529,7 @@ $(objNameOk).mouseup(function (e) {
         "object": selectedObject
     });
 
-    
+
 });
 
 $(addObject).mouseup(function (e) {
@@ -492,5 +577,12 @@ window.addEventListener("message", function (request) {
         });
         console.log(request.data);
     }
-});
 
+    if (request.data.message && (request.data.message == "get-ext-objects-request__answer")) {
+        chrome.runtime.sendMessage({
+            "message": "get-ext-objects-request__answer",
+            "objects": request.data.objs
+        });
+        console.log(request.data);
+    }
+});

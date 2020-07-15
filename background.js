@@ -1,57 +1,15 @@
-
 // background.js 
-
-// chrome.tabs.query({
-//     active: true,
-//     currentWindow: false
-// }, function (tabs) {
-//     chrome.tabs.sendMessage(tabs[0].id, {
-//         greeting: "hello"
-//     }, function (response) {
-//         console.log(response.farewell);
-//     });
-// });
 
 var extStatus = false;
 var blockingStatus = false;
+var showSelectionsStatus = false;
 var curSelctedTags;
+var objectsForSelection;
 var regexp = /\/\bmodel\/\b\w*\//gi;
 var modelId;
 var isHereAnswer = true;
 var modelTabId;
 var timer;
-
-
-// function checkingModelStatus() {
-//     if (extStatus) {
-//         chrome.tabs.query({
-//             url: 'http://do.hiveup.org/model/*'
-//         }, function (tabs) {
-//             if (tabs.length != 1) {
-//                 for (let i = 0; i < tabs.length; i++) {
-//                     var activeTab = tabs[i];
-//                     chrome.tabs.sendMessage(activeTab.id, {
-//                         "message": "stop-extansion",
-//                     });
-//                 }
-//             }
-//         });
-//     }
-// }
-
-// function sendModelAndTagsRequest() {
-//     if (!isHereAnswer) return;
-//     try {
-//         chrome.tabs.sendMessage(modelTabId, {
-//             "message": "get_model_name_and_tags"
-//         });
-//     } catch (e) {
-//         console.log(e.onMessage);
-//     }
-//     console.log(modelTabId);
-// }
-
-// setInterval(sendModelAndTagsRequest, 100);
 
 
 chrome.runtime.onMessage.addListener(
@@ -93,8 +51,8 @@ chrome.runtime.onMessage.addListener(
                     });
                 }
             });
-
         }
+
         if (request.message === "send_object_to_hiveup") {
             chrome.tabs.query({
                 url: 'http://do.hiveup.org/model/*'
@@ -218,26 +176,111 @@ chrome.runtime.onMessage.addListener(
                         });
                     }
 
+                    if (showSelectionsStatus) {
+                        chrome.tabs.sendMessage(activeTab.id, {
+                            "message": "start-show-selections",
+                        }, function (callback) {
+                            void chrome.runtime.lastError;
+                        });
+                        chrome.runtime.sendMessage({
+                            "message": "start-show-selections",
+                        }, function (callback) {
+                            void chrome.runtime.lastError;
+                        });
+                    } else {
+                        chrome.tabs.sendMessage(activeTab.id, {
+                            "message": "stop-show-selections",
+                        }, function (callback) {
+                            void chrome.runtime.lastError;
+                        });
+                        chrome.runtime.sendMessage({
+                            "message": "stop-show-selections",
+                        }, function (callback) {
+                            void chrome.runtime.lastError;
+                        });
+                    }
+
                     chrome.tabs.sendMessage(activeTab.id, {
                         "message": "cur-selected-tag",
                         "tag": curSelctedTags
                     }, function (callback) {
-                            void chrome.runtime.lastError;
-                        });
+                        void chrome.runtime.lastError;
+                    });
 
                 }
                 chrome.runtime.sendMessage({
                     "message": "get-cur-selected-tag-answer",
                     "curTag": curSelctedTags
                 }, function (callback) {
-                            void chrome.runtime.lastError;
-                        });
+                    void chrome.runtime.lastError;
+                });
             });
         }
 
-        // chrome.tabs.onRemoved.addListener(function (tabid, removed) {
-        //     alert("tab closed")
-        // })
+        if (request.message === "stop-show-selections") {
+            chrome.tabs.query({
+                // currentWindow: false
+            }, function (tabs) {
+                for (let i = 0; i < tabs.length; i++) {
+                    var activeTab = tabs[i];
+                    chrome.tabs.sendMessage(activeTab.id, {
+                        "message": "stop-show-selections",
+                    }, function (callback) {
+                        void chrome.runtime.lastError;
+                    });
+                }
+            });
+            showSelectionsStatus = false;
+        }
+        if (request.message === "start-show-selections") {
+            sendObjectsForSelectionRequest();
+            chrome.tabs.query({}, function (tabs) {
+                for (let i = 0; i < tabs.length; i++) {
+                    var activeTab = tabs[i];
+                    chrome.tabs.sendMessage(activeTab.id, {
+                        "message": "start-show-selections",
+                    }, function (callback) {
+                        void chrome.runtime.lastError;
+                    });
+                }
+            });
+            showSelectionsStatus = true;
+        }
+
+        if (request.message === "get-ext-objects-request__answer") {
+            objectsForSelection = request.objects;
+            chrome.tabs.query({}, function (tabs) {
+                for (let i = 0; i < tabs.length; i++) {
+                    var activeTab = tabs[i];
+                    chrome.tabs.sendMessage(activeTab.id, {
+                        "message": "objects-for-selection",
+                        "objects": objectsForSelection
+                    }, function (callback) {
+                        void chrome.runtime.lastError;
+                    });
+                }
+            });
+        }
+
+        if (request.message === "give-objects-for-selection") {
+            sendObjectsForSelectionRequest();
+
+            setTimeout(() => {
+                sendResponse({
+                    "objects": objectsForSelection
+                });
+            }, 200);
+            console.log(request);
+            // for (let i = 0; i < tabs.length; i++) {
+            //     var activeTab = tabs[i];
+            //     chrome.tabs.sendMessage(activeTab.id, {
+            //         "message": "objects-for-selection",
+            //         "objects": objectsForSelection
+            //     }, function (callback) {
+            //         void chrome.runtime.lastError;
+            //     });
+            // }
+        }
 
         if (request.message === "start-block-selection") {
             chrome.tabs.query({
@@ -269,6 +312,7 @@ chrome.runtime.onMessage.addListener(
             });
             blockingStatus = false;
         }
+
         if (request.message === "blocking-status-question") {
             if (blockingStatus) {
                 chrome.tabs.query({
@@ -437,6 +481,21 @@ function startTabListener() {
 
 }
 
+function sendObjectsForSelectionRequest() {
+    chrome.tabs.query({
+        url: 'http://do.hiveup.org/model/*'
+    }, function (tabs) {
+        for (let i = 0; i < tabs.length; i++) {
+            var activeTab = tabs[i];
+            chrome.tabs.sendMessage(activeTab.id, {
+                "message": "get-objects-for-selection",
+            }, function (callback) {
+                void chrome.runtime.lastError;
+            });
+        }
+    });
+}
+
 function stopAndClearExt(tabArr) {
     extStatus = false;
     blockingStatus = false;
@@ -479,4 +538,3 @@ function stopAndClearExt(tabArr) {
         });
     }
 }
-

@@ -1,12 +1,11 @@
 jQuery(document).ready(function ($) {
-    let tagSelector = $('#tags-for-objects'),
-        statusOnCheckbox = $('#ext-status'),
-        tagsInput = $('#tagsInput'),
-        tagSelectOkBtn = $('#tag-select-ok'),
-        statusOnBlocking = $('#blocking-status');
+    let statusOnCheckbox = $('#ext-status'),
+        statusOnBlocking = $('#blocking-status'),
+        statusOnShowSelections = $('#show-selections-status');
 
     checkCurrentModels();
     checkStateOnCurPage();
+    checkStateShowSelections();
     checkTagOnCurPage();
     checkBlockingStateOnCurPage();
     fillSelectedTagsList(selectedTagsArr);
@@ -42,6 +41,29 @@ jQuery(document).ready(function ($) {
 
             chrome.runtime.sendMessage({
                 "message": "start-extansion",
+            });
+
+        }
+    });
+
+    $(statusOnShowSelections).change(function (e) {
+        let onOrOff;
+        if ($(this).attr('checked')) {
+            $(this).attr('checked', false);
+            onOrOff = false;
+
+            chrome.runtime.sendMessage({
+                "message": "stop-show-selections",
+            });
+
+        } else {
+            $(this).attr('checked', true);
+            onOrOff = true;
+            console.log(onOrOff);
+
+            chrome.runtime.sendMessage({
+                "message": "start-show-selections",
+                // "objects": objectsForSelection
             });
 
         }
@@ -86,6 +108,15 @@ jQuery(document).ready(function ($) {
                 }
             }
 
+            if (request.message === "show-selections-state-answer") {
+                console.log('show selections answer is ' + request.state);
+                if (request.state) {
+                    $(statusOnShowSelections).attr('checked', true);
+                } else {
+                    $(statusOnShowSelections).attr('checked', false);
+                }
+            }
+
             if (request.message === "get-cur-selected-tag-answer") {
                 console.log(request);
                 if (request.curTag) {
@@ -126,7 +157,8 @@ jQuery(document).ready(function ($) {
 });
 
 var selectedTagsArr = [],
-    tagsAndColorsArr = [];
+    tagsAndColorsArr = [],
+    objectsForSelection;
 
 function checkStateOnCurPage() {
     chrome.tabs.query({
@@ -136,6 +168,18 @@ function checkStateOnCurPage() {
         var activeTab = tabs[0];
         chrome.tabs.sendMessage(activeTab.id, {
             "message": "extansion-state"
+        });
+    });
+}
+
+function checkStateShowSelections () {
+    chrome.tabs.query({
+        active: true,
+        currentWindow: true
+    }, function (tabs) {
+        var activeTab = tabs[0];
+        chrome.tabs.sendMessage(activeTab.id, {
+            "message": "show-selections-state"
         });
     });
 }
@@ -230,7 +274,7 @@ function sendNewTagInModel(tag) {
 
 let colors = 'ffff99 ffccc9 ccccff ccffcc ffff33 ff9999 9999cc ccff99 ff9900 cc9999 00ccff 66cc00 cc9900 cc6699 0099cc 669900 996633 cc3366 099999 999900';
 
-function tag2color () {
+function tag2color() {
     let color = colors.split(' ');
     color = '#' + color[Math.floor(Math.random() * color.length)];
     return color;
@@ -245,9 +289,9 @@ function autocomplete(inp, arr) {
         var a, b, i, val = this.value;
 
         setTimeout(function () {
-            $('body.popup-body').css('padding-bottom', $('#tagsInputautocomplete-list').height());
+            $('body.popup-body').css('padding-bottom', $('#tagsInputautocomplete-list').height() + 10);
             console.log('class added');
-        },100);
+        }, 100);
         a = document.createElement("DIV");
         a.setAttribute("id", this.id + "autocomplete-list");
         a.setAttribute("class", "autocomplete-items");
@@ -436,9 +480,9 @@ function autocomplete(inp, arr) {
             x[i].classList.remove("autocomplete-active");
         }
     }
-    
+
     $(inp).blur(function () {
-        $('body.popup-body').css('padding-bottom','');
+        $('body.popup-body').css('padding-bottom', '');
         console.log('class removed');
     });
 
