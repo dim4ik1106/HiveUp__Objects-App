@@ -70,8 +70,8 @@ function htmlToString(html) {
 var tagString;
 var finalSelection;
 
-function wrapSelection(is_blocking) {
-    var allRange = window.getSelection();
+var allRange = window.getSelection();
+    function wrapSelection(is_blocking) {
     var range = window.getSelection().getRangeAt(0);
     console.log(range);
 
@@ -323,6 +323,7 @@ chrome.runtime.onMessage.addListener(
             } else {
                 let pseudoArr = [request.object];
                 wrapSelections(pseudoArr, true);
+                
             }
 
         } else if (request.message === "objects-for-selection") {
@@ -369,8 +370,8 @@ function wrapSelections(objects, scrollTo) {
                         let startNodesList = newStartCont.childNodes,
                             endNodesList = newEndCont.childNodes;
                         try {
-                            startNodesList = newStartCont.childNodes,
-                                endNodesList = newEndCont.childNodes;
+                            startNodesList = newStartCont.childNodes;
+                            endNodesList = newEndCont.childNodes;
                         } catch (error) {
                             console.log(error);
                         }
