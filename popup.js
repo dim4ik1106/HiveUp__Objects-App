@@ -168,6 +168,8 @@ function checkStateOnCurPage() {
         var activeTab = tabs[0];
         chrome.tabs.sendMessage(activeTab.id, {
             "message": "extansion-state"
+        }, function (callback) {
+            void chrome.runtime.lastError;
         });
     });
 }
@@ -180,6 +182,8 @@ function checkStateShowSelections () {
         var activeTab = tabs[0];
         chrome.tabs.sendMessage(activeTab.id, {
             "message": "show-selections-state"
+        }, function (callback) {
+            void chrome.runtime.lastError;
         });
     });
 }
@@ -192,6 +196,8 @@ function checkTagOnCurPage() {
         var activeTab = tabs[0];
         chrome.tabs.sendMessage(activeTab.id, {
             "message": "get-cur-selected-tag"
+        }, function (callback) {
+            void chrome.runtime.lastError;
         });
     });
 }
@@ -204,6 +210,8 @@ function checkBlockingStateOnCurPage() {
         var activeTab = tabs[0];
         chrome.tabs.sendMessage(activeTab.id, {
             "message": "block-selection-state"
+        }, function (callback) {
+            void chrome.runtime.lastError;
         });
     });
 }

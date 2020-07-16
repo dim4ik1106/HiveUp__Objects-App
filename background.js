@@ -45,7 +45,6 @@ chrome.runtime.onMessage.addListener(
                                     void chrome.runtime.lastError;
                                 });
                                 console.log("highlight_command_from_hiveup WAS RECIVED IN BG AND SEND TO THE NEW PAGE");
-                                console.log(request.object);
                             }
                         });
                     });
@@ -528,13 +527,19 @@ function stopAndClearExt(tabArr) {
         }
         chrome.runtime.sendMessage({
             "message": "stop-extansion",
+        }, function (callback) {
+            void chrome.runtime.lastError;
         });
         chrome.runtime.sendMessage({
-            "message": "stop-block-selection",
+            "message": "stop-block-selection"
+        }, function (callback) {
+            void chrome.runtime.lastError;
         });
         chrome.runtime.sendMessage({
             "message": "cur-selected-tag",
             tag: curSelctedTags
+        }, function (callback) {
+            void chrome.runtime.lastError;
         });
     }
 }
