@@ -144,7 +144,7 @@ jQuery(document).ready(function ($) {
 
                 } else {
                     if (request.tabsCount == 0) {
-                        $('.popup-body').prepend('<a href="http://do.hiveup.org/done/" target="_blank" rel="HiveUp" class="popup-button rounded unique-class">Open projects</a>');
+                        $('.popup-body').prepend('<a href="https://hiveup.org/done/" target="_blank" rel="HiveUp" class="popup-button rounded unique-class">Open projects</a>');
                         $('.popup-body').prepend('<p class="extansion-message">Please open your model on HiveUp to use extension.</p>');
                     } else if (request.tabsCount > 1) {
                         $('.popup-body').prepend('<p class="extansion-message">Please open only one model on HiveUp to use extension.</p>');
@@ -269,7 +269,7 @@ function sendSelectedTagsToThePage() {
 
 function sendNewTagInModel(tag) {
     chrome.tabs.query({
-        url: 'http://do.hiveup.org/model/*'
+        url: 'https://hiveup.org/model/*'
     }, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, {
             "message": "create-new-tag",
@@ -479,7 +479,9 @@ function autocomplete(inp, arr) {
         if (currentFocus >= x.length) currentFocus = 0;
         if (currentFocus < 0) currentFocus = (x.length - 1);
         /*add class "autocomplete-active":*/
-        x[currentFocus].classList.add("autocomplete-active");
+        try {
+            x[currentFocus].classList.add("autocomplete-active");
+        } catch (e) {}
     }
 
     function removeActive(x) {

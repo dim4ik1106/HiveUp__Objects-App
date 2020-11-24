@@ -13,8 +13,9 @@
         "css": ["style.css"]
     }],
     "icons": {
-        "48": "/extension-icons/icon-3.png",
-        "128": "/extension-icons/icon-1.png"
+        "16": "/extension-icons/icon16.png",
+        "48": "/extension-icons/icon48.png",
+        "128": "/extension-icons/icon128.png"
     },
     "browser_action": {
         "default_icon": "icon.png",
