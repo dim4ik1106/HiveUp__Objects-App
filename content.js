@@ -33,10 +33,11 @@ var nameMenu = $('<div class="objects-context-menu-container" id="object-name-me
 $(nameContainer).append(nameObject);
 $(nameMenu).append(nameContainer);
 
-$(deleteObject).click(function (e) {
+$('#delete-object').on('click', function (e) {
     // e.preventDefault();
     e.stopPropagation();
-    unwrapSelection(tagString);
+    console.log('delete clicked');
+    unwrapSelection(window.tagString);
     $(deleteMenu).hide();
 });
 
@@ -432,6 +433,14 @@ function wrapSelections(objects, scrollTo) {
                             top: defPosition(e).y + "px",
                             left: defPosition(e).x + "px",
                             display: "block"
+                        });
+                        $('#delete-object').off('click');
+                        $('#delete-object').on('click', function (e) {
+                            // e.preventDefault();
+                            e.stopPropagation();
+                            console.log('delete clicked');
+                            unwrapSelection(window.tagString);
+                            $(deleteMenu).hide();
                         });
                     });
                     $(reverseAddedSelection.span).attr('data-object-name', objects[y].name);
