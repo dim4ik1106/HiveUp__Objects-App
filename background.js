@@ -54,7 +54,7 @@ chrome.runtime.onMessage.addListener(
 
         if (request.message === "send_object_to_hiveup") {
             chrome.tabs.query({
-                url: 'https://hiveup.org/model/*'
+                url: 'https://alex.hiveup.org/model/*'
             }, function (tabs) {
                 console.log(tabs);
                 if (tabs.length == 0) {
@@ -397,7 +397,7 @@ chrome.runtime.onMessage.addListener(
 
         if (request.message === "check_is_here_opened_models") {
             chrome.tabs.query({
-                url: 'https://hiveup.org/model/*'
+                url: 'https://alex.hiveup.org/model/*'
             }, function (tabs) {
                 if (tabs.length == 0) {
                     chrome.runtime.sendMessage({
@@ -459,7 +459,7 @@ chrome.runtime.onMessage.addListener(
 
 function startTabListener() {
     chrome.tabs.query({
-        url: 'https://hiveup.org/model/*'
+        url: 'https://alex.hiveup.org/model/*'
     }, function (tabs) {
         if (tabs.length > 1 || tabs.length < 1) {
             chrome.tabs.query({}, function (allTabs) {
@@ -482,7 +482,7 @@ function startTabListener() {
 
 function sendObjectsForSelectionRequest() {
     chrome.tabs.query({
-        url: 'https://hiveup.org/model/*'
+        url: 'https://alex.hiveup.org/model/*'
     }, function (tabs) {
         for (let i = 0; i < tabs.length; i++) {
             var activeTab = tabs[i];
