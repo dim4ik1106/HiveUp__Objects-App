@@ -144,7 +144,7 @@ jQuery(document).ready(function ($) {
 
                 } else {
                     if (request.tabsCount == 0) {
-                        $('.popup-body').prepend('<a href="https://alex.hiveup.org/done/" target="_blank" rel="HiveUp" class="popup-button rounded unique-class">Open projects</a>');
+                        $('.popup-body').prepend('<a href="http://alex.hiveup.org/done/" target="_blank" rel="HiveUp" class="popup-button rounded unique-class">Open projects</a>');
                         $('.popup-body').prepend('<p class="extansion-message">Please open your model on HiveUp to use extension.</p>');
                     } else if (request.tabsCount > 1) {
                         $('.popup-body').prepend('<p class="extansion-message">Please open only one model on HiveUp to use extension.</p>');
@@ -269,7 +269,7 @@ function sendSelectedTagsToThePage() {
 
 function sendNewTagInModel(tag) {
     chrome.tabs.query({
-        url: 'https://alex.hiveup.org/model/*'
+        url: 'http://alex.hiveup.org/model/*'
     }, function (tabs) {
         chrome.tabs.sendMessage(tabs[0].id, {
             "message": "create-new-tag",
